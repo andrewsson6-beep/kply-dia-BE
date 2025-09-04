@@ -11,10 +11,11 @@ class Forane(Base):
     for_id :Mapped[id_key] = mapped_column(init=False)
     for_unique_no = mapped_column(BigInteger, unique=True, nullable=False)
     for_code = mapped_column(String(50), unique=True)
-    for_name = mapped_column(String(255), nullable=False)
+    for_name = mapped_column(String(255), nullable=False) # Forane Church Name
     for_location = mapped_column(String(255))
     for_vicar_name = mapped_column(String(255))
     for_total_contribution_amount = mapped_column(Numeric(12, 2), default=0)
+    for_contact_number=mapped_column(String(255))
     for_is_deleted = mapped_column(Boolean, default=False)
     for_created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
     for_created_by = mapped_column(Integer, ForeignKey("kply_system_users.usr_id"))

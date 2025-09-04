@@ -1,13 +1,10 @@
 from email import errors
-from app.models.role_model import Role
-from app.models.systemuser_model import SystemUser
 from app.schema.auth_schema import ChangePasswordSchema, LoginSchemaBase, UserAuthenticatedDetails
-from app.schema.user_schema import UserCreateSchema, UserInfoSchemaBase
 from common.security.jwt import create_access_token, get_token, jwt_decode, password_verify
 from database.db import async_db_session
 from common.response.response_schema import  response_base
 from app.dao.user_dao import user_dao
-from fastapi import APIRouter,Request
+from fastapi import Request
 import bcrypt
 from common.security.jwt import get_hash_password
 
