@@ -12,10 +12,8 @@ class ForaneDAO:
         self.model = model
     
     async def forane_list_query(self, db: AsyncSession) -> Forane:
-       print("--------------At DAO Level Before")
        stmt = (select(self.model))
        result = await db.execute(stmt)
-       print("--------------At DAO Level After")
        return result.scalars()
     
 

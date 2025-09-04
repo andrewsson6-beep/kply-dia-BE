@@ -13,9 +13,7 @@ class ForaneService:
     async def all_forane_list() -> Forane:
         """To List All Forane Under The  Diocese"""
         async with async_db_session() as db:
-            print("--------------At Service Level Before")
             foranes = await dao_forane.forane_list_query(db) 
-            print("--------------At Service Level After")
             if not foranes:
                 return response_base.fail(data="No Foranes Present")
             return [ForaneInfoSchemaBase.model_validate(forane) for forane in foranes]

@@ -8,7 +8,6 @@ router = APIRouter()
 
 @router.get('/forane-list',dependencies=[DependsJwtAuth])
 async def forane_list_api() -> ResponseSchemaModel:
-    print("--------------At API Level")
     data = await  foraneservice.all_forane_list() 
     if isinstance(data, dict) and data.get("code") == 400:
         return data  
