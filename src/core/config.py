@@ -10,8 +10,8 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     # Server settings (updated to 8080)
-    HOST: str = "127.0.0.1"  # Default to localhost for security
-    PORT: int = 8000         # <-- Changed to 8080
+    # HOST: str = "127.0.0.1"  # Default to localhost for security
+    # PORT: int = 8000         # <-- Changed to 8080
 
     # Time settings
     DATETIME_TIMEZONE: str = "Asia/Kolkata"
@@ -26,14 +26,12 @@ class Settings(BaseSettings):
         extra="ignore"
     )
 
-    #Google Auth
+
     GOOGLE_CLIENT_ID: str 
     GOOGLE_CLIENT_SECRET: str
 
-    DATABASE_TYPE: Literal['mysql', 'postgresql']
-    # DATABASE_TYPE: str 
-    #Literal['mysql', 'postgresql']
-    # str = 'mysql' 
+    DATABASE_TYPE:str
+   
 
     DATABASE_HOST: str
     DATABASE_PORT: int

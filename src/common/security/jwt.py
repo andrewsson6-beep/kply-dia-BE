@@ -68,17 +68,16 @@ def jwt_decode(token: str) -> TokenPayload:
         session_uuid = payload.get('session_uuid') or 'debug'
         user_id = payload.get('sub')
         expire_time = payload.get('exp')
-        user_type=payload.get('user_type')
         if not user_id:
             raise TokenError(msg='Token invalid')
     except ExpiredSignatureError:
         raise TokenError(msg='Token expired')
     except (JWTError, Exception):
         raise TokenError(msg='Token invalid')
-    return TokenPayload(id=int(user_id), session_uuid=session_uuid, expire_time=expire_time,user_type=user_type)
+    return TokenPayload(id=int(user_id), session_uuid=session_uuid, expire_time=expire_time)
 
 
-async def create_access_token(user_id: str,user_type:str) -> AccessToken:
+async def create_access_token(user_id: str) -> AccessToken:
     """
     Generate encrypted access token
 
@@ -91,7 +90,6 @@ async def create_access_token(user_id: str,user_type:str) -> AccessToken:
         'session_uuid': session_uuid,
         'exp': expire,
         'sub': user_id,
-        'user_type':user_type
     })
 
     return AccessToken(access_token=access_token, access_token_expire_time=expire, session_uuid=session_uuid)

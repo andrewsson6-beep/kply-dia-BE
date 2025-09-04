@@ -59,7 +59,6 @@ class TokenPayload:
     id: int
     session_uuid: str
     expire_time: datetime
-    user_type:int
 
 
 @dataclasses.dataclass

@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 from fastapi.routing import APIRoute
 import uvicorn
 from fastapi import FastAPI
-# from app.router import router as appRouter
 from core.config import settings
 from starlette.middleware.cors import CORSMiddleware
 load_dotenv()
