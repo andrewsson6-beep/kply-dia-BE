@@ -13,10 +13,19 @@ class ForaneService:
     async def all_forane_list() -> Forane:
         """To List All Forane Under The  Diocese"""
         async with async_db_session() as db:
-            foranes = await dao_forane.forane_list_query(db) 
-            if not foranes:
-                return response_base.fail(data="No Foranes Present")
+            foranes = await dao_forane.forane_list_query(db)
+            if not foranes:  
+                data="No Foranes Present"
+                return data
             return [ForaneInfoSchemaBase.model_validate(forane) for forane in foranes]
+        
+    @staticmethod
+    async def add_new_forane(forane_data: ForaneInfoSchemaBase):
+        """To Add A New Forane In The Diocese"""
+        async with async_db_session() as db:
+            new_forane = await dao_forane.create_forane(db, forane_data)
+            return ForaneInfoSchemaBase.model_validate(new_forane)
+        
             
             
 foraneservice: ForaneService = ForaneService()

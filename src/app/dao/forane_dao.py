@@ -1,8 +1,9 @@
 from app.models.forane_model import Forane
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import func, insert, select
 from sqlalchemy.orm import selectinload
 from app.models.systemuser_model import SystemUser
+from app.schema.forane_schema import ForaneInfoSchemaBase
 
 
 class ForaneDAO:
@@ -14,7 +15,35 @@ class ForaneDAO:
     async def forane_list_query(self, db: AsyncSession) -> Forane:
        stmt = (select(self.model))
        result = await db.execute(stmt)
-       return result.scalars()
+       return result.scalars().all()
+
+    async def create_forane(self, db: AsyncSession, forane_data: ForaneInfoSchemaBase) -> Forane:
+
+        # Generate next unique number
+        stmt_max = select(func.max(self.model.for_id))
+        result = await db.execute(stmt_max)
+        max_unique_no = result.scalar() or 0
+        new_unique_no = max_unique_no + 1
+
+        # Generate institution code from unique number
+        new_code = f"FORANE-{new_unique_no:04d}"   # e.g., INS-0001
+
+        stmt = (
+            insert(self.model)
+            .values(
+                for_code=new_code,
+                for_unique_no=new_unique_no,
+                for_name=forane_data.forName,
+                for_location=forane_data.forLocation,
+                for_vicar_name=forane_data.forVicarName,
+                for_total_contribution_amount=forane_data.forTotalContribution,
+                for_contact_number=forane_data.forContactNumber,
+            )
+            .returning(self.model)   # so we get the inserted row back
+        )
+        result = await db.execute(stmt)
+        await db.commit()
+        return result.scalar_one()
     
 
 dao_forane:ForaneDAO = ForaneDAO(Forane)

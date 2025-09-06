@@ -14,8 +14,18 @@ class IndividualsService:
         async with async_db_session() as db:
             individuals = await dao_individuals.individuals_list_query(db)
             if not individuals:
-                return response_base.fail(data="No Individuals Present")
+                data="No Individuals Present"
+                return data
             return [IndividualsInfoSchemaBase.model_validate(individual) for individual in individuals]
+        
+    @staticmethod
+    async def add_new_individual(individual_data: IndividualsInfoSchemaBase):
+        """Create a new Individual"""
+        async with async_db_session() as db:
+            new_individual = await dao_individuals.create_individual(db, individual_data)
+            return IndividualsInfoSchemaBase.model_validate(new_individual)
+
+
             
             
 individualservice: IndividualsService = IndividualsService()

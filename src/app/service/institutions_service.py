@@ -1,8 +1,8 @@
+from fastapi import Request
 from app.models.institution_model import Institution
 from app.schema.institutions_schema import InstitutionsInfoSchemaBase
 from database.db import async_db_session
 from app.dao.institution_dao import dao_institutions
-from common.response.response_schema import  response_base
 
 
 class InstitutionService:
@@ -14,8 +14,16 @@ class InstitutionService:
         async with async_db_session() as db:
             institutions = await  dao_institutions.institutions_list_query(db)
             if not institutions:
-                return response_base.fail(data="No institutions Present")
+                data="No institutions Present"
+                return data
             return [InstitutionsInfoSchemaBase.model_validate(institution) for institution in institutions]
+    
+    @staticmethod
+    async def add_new_institution(request:Request, institution_data: InstitutionsInfoSchemaBase):
+        """Create a new Institution"""
+        async with async_db_session.begin() as db:
+            new_institution = await dao_institutions.create_institution(db, institution_data)
+            return InstitutionsInfoSchemaBase.model_validate(new_institution)
             
             
 institutionservice: InstitutionService = InstitutionService()
