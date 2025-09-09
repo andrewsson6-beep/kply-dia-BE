@@ -1,0 +1,63 @@
+
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import func, insert, select
+from sqlalchemy.orm import selectinload
+from app.models.parish_model import Parish
+from app.models.systemuser_model import SystemUser
+from app.schema.parish_schema import ParishCreateSchema
+
+
+
+class ParishDAO:
+    """Parish database operation class"""
+
+    def __init__(self, model):
+        self.model = model
+    
+
+
+    async def create_parish(self, db: AsyncSession, parish_data: ParishCreateSchema) -> Parish:
+        # Generate next unique number
+        stmt_max = select(func.max(self.model.par_unique_no))
+        result = await db.execute(stmt_max)
+        max_unique_no = result.scalar() or 0
+        new_unique_no = max_unique_no + 1
+
+        # Generate Parish code
+        new_code = f"PAR-{new_unique_no:04d}"  # e.g., PAR-0001
+
+        # Insert into DB
+        stmt = (
+            insert(self.model)
+            .values(
+                par_for_id=parish_data.parForId,
+                par_unique_no=new_unique_no,
+                par_code=new_code,
+                par_name=parish_data.parName,
+                par_location=parish_data.parLocation,
+                par_vicar_name=parish_data.parVicarName,
+                par_total_contribution_amount=parish_data.parTotalContribution or 0,
+                par_is_deleted=False
+            )
+            .returning(self.model)  # return the inserted row
+        )
+
+        result = await db.execute(stmt)
+        await db.commit()
+        return result.scalar_one()
+    
+
+    async def parish_list_query(self, db: AsyncSession) -> Parish:
+       stmt = (select(self.model).where(self.model.par_is_deleted==False))
+       result = await db.execute(stmt)
+       return result.scalars().all()
+    
+
+    
+
+dao_parishs:ParishDAO = ParishDAO(Parish)
+
+
+
+
+

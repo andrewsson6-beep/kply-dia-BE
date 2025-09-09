@@ -1,7 +1,5 @@
-from datetime import datetime, timezone
-from typing import  List
 from common.model import Base,id_key
-from sqlalchemy import DateTime,String,Boolean,Integer,Text,Boolean, DateTime,ForeignKey, Numeric, BigInteger
+from sqlalchemy import DateTime,String,Boolean,Integer,Boolean, DateTime,ForeignKey, Numeric, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column,relationship
 from sqlalchemy.sql import func
 
@@ -15,7 +13,7 @@ class Forane(Base):
     for_location = mapped_column(String(255))
     for_vicar_name = mapped_column(String(255))
     for_total_contribution_amount = mapped_column(Numeric(12, 2), default=0)
-    for_contact_number=mapped_column(String(255))
+    for_contact_number = mapped_column(String(255))
     for_is_deleted = mapped_column(Boolean, default=False)
     for_created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
     for_created_by = mapped_column(Integer, ForeignKey("kply_system_users.usr_id"))

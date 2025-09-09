@@ -16,3 +16,5 @@ async def forane_list_api() -> ResponseSchemaModel:
 async def add_new_forane(obj: ForaneInfoSchemaBase) -> ResponseSchemaModel:
     data = await  foraneservice.add_new_forane(obj) 
     return response_base.success(data=data) 
+
+
