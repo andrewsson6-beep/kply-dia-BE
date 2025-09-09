@@ -18,3 +18,7 @@ async def add_new_forane(obj: ForaneInfoSchemaBase) -> ResponseSchemaModel:
     return response_base.success(data=data) 
 
 
+
+
+
+

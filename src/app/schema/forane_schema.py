@@ -18,3 +18,9 @@ class ForaneInfoSchemaBase(SchemaBase):
     class Config:
         from_attributes = True
         validate_by_name = True
+
+
+
+class ForaneParishRequestSchema(SchemaBase):
+    """Request schema to fetch parishes under a Forane"""
+    foraneId: int = Field(..., alias="forane_id", description="Forane Id")

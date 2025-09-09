@@ -1,4 +1,4 @@
-from app.schema.forane_schema import ForaneInfoSchemaBase
+from app.schema.forane_schema import ForaneInfoSchemaBase, ForaneParishRequestSchema
 from app.schema.parish_schema import ParishCreateSchema
 from app.service.parish_service import parishservice
 from fastapi import APIRouter,Request
@@ -15,4 +15,9 @@ async def add_new_parish(obj: ParishCreateSchema) -> ResponseSchemaModel:
 @router.get('/all-parish-list',dependencies=[DependsJwtAuth])
 async def parish_list_api() -> ResponseSchemaModel:
     data = await  parishservice.all_parish_list()
+    return response_base.success(data=data) 
+
+@router.post('/all_forane_parishes',dependencies=[DependsJwtAuth])
+async def all_parishes_of_forane(obj: ForaneParishRequestSchema) -> ResponseSchemaModel:
+    data = await  parishservice.get_parishes_by_forane(obj)
     return response_base.success(data=data) 

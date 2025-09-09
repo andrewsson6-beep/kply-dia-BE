@@ -2,6 +2,7 @@ from app.models.forane_model import Forane
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func, insert, select
 from sqlalchemy.orm import selectinload
+from app.models.parish_model import Parish
 from app.models.systemuser_model import SystemUser
 from app.schema.forane_schema import ForaneInfoSchemaBase
 
@@ -44,6 +45,14 @@ class ForaneDAO:
         result = await db.execute(stmt)
         await db.commit()
         return result.scalar_one()
+    
+    async def get_parishes_by_forane(self, db: AsyncSession, forane_id: int) -> list[Parish]:
+        stmt = select(Parish).where(
+            self.model.par_for_id == forane_id,
+            self.model.par_is_deleted == False
+        )
+        result = await db.execute(stmt)
+        return result.scalars().all()
     
 
 dao_forane:ForaneDAO = ForaneDAO(Forane)

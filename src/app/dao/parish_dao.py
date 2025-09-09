@@ -52,6 +52,14 @@ class ParishDAO:
        result = await db.execute(stmt)
        return result.scalars().all()
     
+    async def get_parishes_by_forane(self, db: AsyncSession, forane_id: int) -> list[Parish]:
+        stmt = select(self.model).where(
+            self.model.par_for_id == forane_id,
+            self.model.par_is_deleted == False
+        )
+        result = await db.execute(stmt)
+        return result.scalars().all()
+    
 
     
 
