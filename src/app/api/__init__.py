@@ -8,6 +8,6 @@ from app.api.parish_api import router as parishRoute
 router = APIRouter()
 router.include_router(authRoute)
 router.include_router(foraneRoute)
-router.include_router(individualsRoute)
-router.include_router(institutionRoute)
+router.include_router(individualsRoute,prefix='/individual')
+router.include_router(institutionRoute,prefix='/institution')
 router.include_router(parishRoute)

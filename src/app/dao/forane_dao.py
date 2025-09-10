@@ -46,13 +46,7 @@ class ForaneDAO:
         await db.commit()
         return result.scalar_one()
     
-    async def get_parishes_by_forane(self, db: AsyncSession, forane_id: int) -> list[Parish]:
-        stmt = select(Parish).where(
-            self.model.par_for_id == forane_id,
-            self.model.par_is_deleted == False
-        )
-        result = await db.execute(stmt)
-        return result.scalars().all()
+
     
 
 dao_forane:ForaneDAO = ForaneDAO(Forane)

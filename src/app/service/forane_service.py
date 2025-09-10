@@ -26,6 +26,9 @@ class ForaneService:
             new_forane = await dao_forane.create_forane(db, forane_data)
             return ForaneInfoSchemaBase.model_validate(new_forane)
         
+    
+   
+        
             
             
 foraneservice: ForaneService = ForaneService()

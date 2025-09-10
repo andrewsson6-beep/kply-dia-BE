@@ -34,7 +34,6 @@ class ParishService:
     async def get_parishes_by_forane(obj:ForaneParishRequestSchema) -> Parish:
         """To List All Parishes Under The  Forane"""
         async with async_db_session() as db:
-            forane_id=2
             parishes = await  dao_parishs.get_parishes_by_forane(db=db,forane_id=obj.foraneId)
             if not parishes:  
                 data="No Parishes Present For This Forane"
