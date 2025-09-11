@@ -16,6 +16,7 @@ class Institution(Base):
     ins_name = mapped_column(String(255), nullable=False)
     ins_type = mapped_column(String(100))
     ins_address = mapped_column(Text)
+    ins_total_contribution_amount = mapped_column(Numeric(12, 2), default=0)
     ins_phone = mapped_column(String(20))
     ins_email = mapped_column(String(255))
     ins_website = mapped_column(String(255))

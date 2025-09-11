@@ -1,8 +1,12 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import func, insert, select
+from sqlalchemy import func, insert, select, update
 from app.models.institution_model import Institution
+from app.models.institutioncontribution_model import InstitutionContribution
+from app.schema.contribution_schema import InstitutionContributionCreateSchema
 from app.schema.institutions_schema import InstitutionsInfoSchemaBase
+from sqlalchemy.orm import selectinload,noload
+
 class InstitutionDAO:
     """Institutions database operation class"""
 
@@ -49,6 +53,96 @@ class InstitutionDAO:
         result = await db.execute(stmt)
         await db.commit()
         return result.scalar_one()
+    
+
+    async def get_institution_with_contributions(self, db: AsyncSession, institution_id: int):
+        stmt = (
+            select(self.model)
+            .options(selectinload(self.model.contributions))
+            .where(self.model.ins_id == institution_id, self.model.ins_is_deleted == False)
+        )
+        result = await db.execute(stmt)
+        return result.scalar_one_or_none()
+    
+
+
+    async def create_institution_contribution(self, db: AsyncSession, data: InstitutionContributionCreateSchema) -> InstitutionContribution:
+        # Insert new contribution
+        stmt = (
+            insert(InstitutionContribution)
+            .values(
+                incon_ins_id=data.institutionId,
+                incon_amount=data.amount,
+                incon_purpose=data.purpose,
+                incon_is_deleted=False,
+            )
+            .returning(InstitutionContribution)
+        )
+        result = await db.execute(stmt)
+
+        contribution = result.scalar_one()
+
+        # Update institutions's total contribution
+        stmt_update = (
+            update(Institution)
+            .where(Institution.ins_id == data.institutionId)
+            .values(ins_total_contribution_amount=Institution.ins_total_contribution_amount + data.amount)
+        )
+        await db.execute(stmt_update)
+        await db.commit()
+        return contribution
+    
+
+    async def update_institution(self, db: AsyncSession, ins_id: int, update_data: dict) -> Institution | None:
+        stmt = (
+            update(self.model)
+            .where(self.model.ins_id == ins_id, self.model.ins_is_deleted == False)
+            .values(**update_data)
+            .returning(self.model).options(noload(Institution.contributions))
+        )
+        result = await db.execute(stmt)
+        await db.commit()
+        return result.scalar_one_or_none()
+    
+    async def update_contribution(self, db: AsyncSession, incon_id: int, update_data: dict) -> InstitutionContribution | None:
+        # Fetch old contribution first
+        stmt_old = select(InstitutionContribution).where(
+            InstitutionContribution.incon_id == incon_id,InstitutionContribution.incon_is_deleted == False
+        )
+        result = await db.execute(stmt_old)
+        old_contribution = result.scalar_one_or_none()
+
+        if not old_contribution:
+            return None
+
+        old_amount = old_contribution.incon_amount or 0
+        new_amount = update_data.get("incon_amount", old_amount)
+
+        # Update contribution row
+        stmt = (
+            update(InstitutionContribution)
+            .where(InstitutionContribution.incon_id == incon_id, InstitutionContribution.incon_is_deleted == False)
+            .values(**update_data)
+            .returning(InstitutionContribution)
+        )
+        result = await db.execute(stmt)
+        updated_contribution = result.scalar_one_or_none()
+
+        # Adjust Institution total contribution
+        diff = new_amount - old_amount
+        await db.execute(
+            update(Institution)
+            .where(Institution.ins_id == old_contribution.incon_ins_id)
+            .values(
+                ins_total_contribution_amount=Institution.ins_total_contribution_amount + diff
+            )
+        )
+
+        await db.commit()
+        return updated_contribution
+
+    
+
     
 
 dao_institutions:InstitutionDAO = InstitutionDAO(Institution)
