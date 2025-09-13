@@ -3,7 +3,7 @@ from app.models.family_model import Family
 from common.security.jwt import get_token, jwt_decode
 from database.db import async_db_session
 from app.dao.family_dao import daoFamily
-from app.schema.family_schema  import FamilyCreateSchema,FamilyResponseSchema
+from app.schema.family_schema  import FamilyCreateSchema,FamilyResponseSchema,FamilyUpdateSchema
 
 
 class FamilyService:
@@ -19,6 +19,27 @@ class FamilyService:
             if not result:
                 raise ValueError("Family Cannot Be Created")
             return FamilyResponseSchema.model_validate(result)
+        
+    @staticmethod
+    async def update_family_details(request:Request,data:FamilyUpdateSchema) -> Family:
+        """To Update the details of the Family Under the Community"""
+        token = get_token(request)
+        user_id = jwt_decode(token).id  
+        async with async_db_session.begin() as db:
+            update_data = data.model_dump(exclude_unset=True)
+            family_id = update_data.pop("fam_id")
+
+            update_data["fam_updated_by"] = user_id  
+
+            updated = await daoFamily.update_family(db, family_id, update_data)
+            if not updated:
+                raise ValueError("Family not found or already deleted")
+
+            return FamilyResponseSchema.model_validate(updated)
+    
+
+
+
        
     
 

@@ -1,5 +1,5 @@
 
-from sqlalchemy import func, insert, select
+from sqlalchemy import func, insert, select, update
 from app.models.family_model import Family
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -40,6 +40,18 @@ class FamilyDAO:
         result = await db.execute(stmt)
         await db.commit()
         return result.scalar_one()
+    
+
+    async def update_family(self, db: AsyncSession, family_id: int, update_data: dict) -> Family | None:
+        stmt = (
+            update(self.model)
+            .where(self.model.fam_id == family_id, self.model.fam_is_deleted == False)
+            .values(**update_data)
+            .returning(self.model)
+        )
+        result = await db.execute(stmt)
+        await db.commit()
+        return result.scalar_one_or_none()
        
 
     
