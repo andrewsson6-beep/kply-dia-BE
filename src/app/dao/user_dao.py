@@ -1,6 +1,6 @@
 from app.models.systemuser_model import SystemUser
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
+from sqlalchemy import insert, select, update
 from sqlalchemy.orm import selectinload
 
 
@@ -21,21 +21,21 @@ class CRUDUser:
         return result.scalar()
     
    
-    # async def create_user(self, db: AsyncSession, obj_data: dict) -> SystemUser:
-    #     """
-    #     Insert a new user into the database.
-    #     """
-    #     stmt = insert(self.model).values(**obj_data).returning(self.model)
-    #     result = await db.execute(stmt)
-    #     await db.commit()
-    #     return result.scalar_one()
+    async def create_user(self, db: AsyncSession, obj_data: dict) -> SystemUser:
+        """
+        Insert a new user into the database.
+        """
+        stmt = insert(self.model).values(**obj_data).returning(self.model)
+        result = await db.execute(stmt)
+        await db.commit()
+        return result.scalar_one()
     
     
-    # async def all_users_query(self, db: AsyncSession) -> SystemUser:
+    async def all_users_query(self, db: AsyncSession) -> SystemUser:
 
-    #    stmt = (select(self.model))
-    #    result = await db.execute(stmt)
-    #    return result.scalars()
+       stmt = (select(self.model))
+       result = await db.execute(stmt)
+       return result.scalars()
     
 
     """Get The User Details By User Id"""

@@ -28,15 +28,15 @@ async def change_password(request:Request,obj: ChangePasswordSchema) -> Response
 
 
 
-# @router.post('/create-new-user')
-# async def createNewUser(request: Request,obj: UserInfoSchemaBase) -> ResponseSchemaModel:
-#     print("--------------At API CREATE USER----->")
-#     print(obj.userPassword)
-#     print(obj)
-#     data = await auth_service.authservice.create_newuser(request=request,obj=obj)
-#     if isinstance(data, dict) and data.get("code", 200) != 200:
-#         return data 
-#     return response_base.success(data=data)
+@router.post('/create-new-user')
+async def createNewUser(request: Request,obj: UserInfoSchemaBase) -> ResponseSchemaModel:
+    print("--------------At API CREATE USER----->")
+    print(obj.userPassword)
+    print(obj)
+    data = await auth_service.authservice.create_newuser(request=request,obj=obj)
+    if isinstance(data, dict) and data.get("code", 200) != 200:
+        return data 
+    return response_base.success(data=data)
 
 
 # @router.get('/all-users')
