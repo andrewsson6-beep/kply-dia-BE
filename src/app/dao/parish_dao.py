@@ -14,8 +14,6 @@ class ParishDAO:
     def __init__(self, model):
         self.model = model
     
-
-
     async def create_parish(self, db: AsyncSession, parish_data: ParishCreateSchema) -> Parish:
         # Generate next unique number
         stmt_max = select(func.max(self.model.par_unique_no))
