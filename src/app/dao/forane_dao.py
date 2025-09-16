@@ -37,7 +37,7 @@ class ForaneDAO:
                 for_name=forane_data.forName,
                 for_location=forane_data.forLocation,
                 for_vicar_name=forane_data.forVicarName,
-                for_total_contribution_amount=forane_data.forTotalContribution,
+                # for_total_contribution_amount=forane_data.forTotalContribution,
                 for_contact_number=forane_data.forContactNumber,
             )
             .returning(self.model)   # so we get the inserted row back

@@ -18,7 +18,7 @@ async def create_community_api(request:Request,data: CommunityCreateSchema) -> R
         return response_base.__response(data=f"Something went wrong { str(e) }")
 
 
-@router.get("/community-list", dependencies=[DependsJwtAuth])
+@router.post("/community-list", dependencies=[DependsJwtAuth])
 async def list_communities(request:Request,data: CommunityListRequestSchema):
     try:
       community_list = await  communityservice.community_list_service(request,data)

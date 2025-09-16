@@ -1,7 +1,7 @@
 from fastapi import Request
 from app.models.community_model import Community
 from app.models.forane_model import Forane
-from app.schema.community_schema import CommunityCreateSchema, CommunityDetailSchema, CommunityRequestSchema, CommunityResponseSchema, CommunityUpdateSchema
+from app.schema.community_schema import CommunityCreateSchema, CommunityDetailSchema, CommunityListRequestSchema, CommunityRequestSchema, CommunityResponseSchema, CommunityUpdateSchema
 from app.schema.forane_schema import ForaneInfoSchemaBase
 from common.security.jwt import get_token, jwt_decode
 from database.db import async_db_session
@@ -24,7 +24,7 @@ class CommunityService:
     
 
     @staticmethod
-    async def community_list_service(request:Request,data:CommunityCreateSchema) -> Community:
+    async def community_list_service(request:Request,data:CommunityListRequestSchema) -> Community:
         """To Create A Community Under the Parish Or Diocese"""
         token = get_token(request)
         user_id = jwt_decode(token).id  
