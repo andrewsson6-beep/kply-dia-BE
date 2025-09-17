@@ -143,4 +143,23 @@ class IndividualDAO:
         return updated_contribution
     
 
+
+
+    async def delete_individual_query(self, db: AsyncSession, user_id: int, individual: int) -> bool:
+        """Soft delete individual"""
+        stmt = (
+            update(self.model)
+            .where(self.model.ind_id == individual, self.model.ind_is_deleted == False)
+            .values(
+                ind_is_deleted=True,
+                ind_updated_by=user_id
+            )
+            .returning(self.model)
+        )
+        result = await db.execute(stmt)
+        await db.commit()
+        return result.scalar_one_or_none()
+    
+    
+
 dao_individuals:IndividualDAO = IndividualDAO(Individual)

@@ -29,7 +29,7 @@ class ForaneService:
 
     @staticmethod
     async def forane__full_details(forane_id:ForaneParishRequestSchema ):
-        """To Add A New Forane In The Diocese"""
+        """Forane  Details """
         async with async_db_session() as db:
             forane_details = await dao_forane.get_forane_with_parishes(db, forane_id.foraneId)
             return ForaneDetailSchema.model_validate(forane_details)  

@@ -72,6 +72,18 @@ async def edit_contribution(request:Request,data:IndividualContributionUpdateSch
         return response_base.fail(data=f"Something went wrong {str(e)}")
 
 
+@router.post("/delete-individual", dependencies=[DependsJwtAuth])
+async def delete_individul(request: Request, data: IndividualDetailRequestSchema):
+    """Delete an Individual"""
+    try:
+        await individualservice.delete_individual_details(request, data.individualId)
+        return response_base.success(data="Individual deleted successfully")
+    except ValueError as e:
+        return response_base.fail(data=str(e))
+    except Exception as e:
+        return response_base.__response(data=f"Something went wrong: {str(e)}")
+
+
 
 
 
