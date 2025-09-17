@@ -24,7 +24,6 @@ async def forane_details(obj: ForaneParishRequestSchema) -> ResponseSchemaModel:
     return response_base.success(data=data) 
 
 
-
 @router.post("/update-forane-details", dependencies=[DependsJwtAuth])
 async def edit_forane(data: ForaneUpdateSchema):
     try:

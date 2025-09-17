@@ -50,7 +50,7 @@ class ForaneDAO:
     async def get_forane_with_parishes(self, db: AsyncSession, forane_id: int) -> Forane | None:
         stmt = (
             select(self.model)
-            .options(selectinload(self.model.parishes))  # eager load parishes
+            .options(selectinload(self.model.parishes),selectinload(self.model.communities))  # eager load parishes
             .where(self.model.for_id == forane_id, self.model.for_is_deleted == False)
         )
         result = await db.execute(stmt)

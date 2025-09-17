@@ -126,3 +126,7 @@ class FamilContributionUpdateSchema(SchemaBase):
         from_attributes = True
         populate_by_name = True
 
+class FamilContributionDeleteSchema(SchemaBase):
+    """Schema for deleting family contributions"""
+    fcon_id: int
+

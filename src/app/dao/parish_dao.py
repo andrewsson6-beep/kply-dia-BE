@@ -1,6 +1,6 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import func, insert, select
+from sqlalchemy import func, insert, select, update
 from sqlalchemy.orm import selectinload
 from app.models.parish_model import Parish
 from app.models.systemuser_model import SystemUser
@@ -57,6 +57,27 @@ class ParishDAO:
         )
         result = await db.execute(stmt)
         return result.scalars().all()
+    
+
+
+    async def get_parish_details(self, db: AsyncSession, par_id: int) -> Parish | None:
+        stmt = (
+            select(self.model)
+            .options(selectinload(self.model.communities))
+            .where(self.model.par_id == par_id, self.model.par_is_deleted == False)
+        )
+        result = await db.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def update_parish_details(self, db: AsyncSession, par_id: int, update_data: dict, user_id: int) -> Parish | None:
+        stmt = (
+            update(self.model)
+            .where(self.model.par_id == par_id, self.model.par_is_deleted == False)
+            .values(**update_data, par_updated_by=user_id)
+            .returning(self.model)
+        )
+        result = await db.execute(stmt)
+        return result.scalar_one_or_none()
     
 
     

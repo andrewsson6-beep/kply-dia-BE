@@ -1,7 +1,10 @@
 # schemas/parish_schema.py
+from datetime import datetime
+from decimal import Decimal
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import List, Optional
 
+from app.schema.community_schema import CommunityResponseSchema
 from common.schema import SchemaBase
 
 
@@ -29,6 +32,37 @@ class ParishResponseSchema(SchemaBase):
     class Config:
         from_attributes = True
         populate_by_name = True
+
+
+class ParishBaseSchema(BaseModel):
+    par_code: Optional[str] = None
+    par_name: Optional[str] = None
+    par_location: Optional[str] = None
+    par_vicar_name: Optional[str] = None
+
+
+class ParishUpdateSchema(ParishBaseSchema):
+    par_id: int
+
+class ParishRequestSchema(SchemaBase):
+    par_id: int
+
+
+
+class ParishDetailSchema(ParishBaseSchema):
+    par_id: int
+    par_for_id: int
+    par_total_contribution_amount: Decimal
+    par_created_at: datetime
+    par_updated_at: Optional[datetime] = None
+    communities: List[CommunityResponseSchema] = []
+
+
+    class Config:
+        from_attributes = True
+    
+
+
 
 
 

@@ -1,6 +1,7 @@
 from dataclasses import Field
 from decimal import Decimal
 from typing import List, Optional
+from app.schema.community_schema import CommunityResponseSchema
 from app.schema.parish_schema import ParishResponseSchema
 from common.schema import SchemaBase
 from pydantic import Field
@@ -40,6 +41,7 @@ class ForaneDetailSchema(SchemaBase):
     for_total_contribution_amount: Optional[Decimal] = Field(default=0)
     for_contact_number: Optional[str]
     parishes: List[ParishResponseSchema] = []
+    communities: List[CommunityResponseSchema] = []
 
     class Config:
         from_attributes = True

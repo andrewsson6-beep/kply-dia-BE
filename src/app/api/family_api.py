@@ -1,4 +1,4 @@
-from app.schema.contribution_schema import FamilContributionCreateSchema
+from app.schema.contribution_schema import FamilContributionCreateSchema, FamilContributionDeleteSchema, FamilContributionUpdateSchema
 from app.schema.family_schema import FamilyCreateSchema, FamilyRequestSchema, FamilyUpdateSchema
 from app.service.family_service  import familyservice
 from fastapi import APIRouter,Request
@@ -50,5 +50,30 @@ async def family_details(data: FamilyRequestSchema):
         return response_base.fail(data=str(e))
    except Exception as e:
         return response_base.__response(data=f"Something went wrong { str(e) }")
+   
+
+
+@router.post("/update-family-contribution", dependencies=[DependsJwtAuth])
+async def update_family_contribution(request: Request, data: FamilContributionUpdateSchema):
+    """Update a family contribution"""
+    try:
+        updated_contribution = await familyservice.update_family_contribution_service(request, data)
+        return response_base.success(data=updated_contribution)
+    except ValueError as e:
+        return response_base.fail(data=str(e))
+    except Exception as e:
+        return response_base.__response(data=f"Something went wrong: {str(e)}")
+
+
+@router.post("/delete-family-contribution", dependencies=[DependsJwtAuth])
+async def delete_family_contribution(request: Request, data: FamilContributionDeleteSchema):
+    """Delete a family contribution"""
+    try:
+        await familyservice.delete_family_contribution_service(request, data.fcon_id)
+        return response_base.success(data="Contribution deleted successfully")
+    except ValueError as e:
+        return response_base.fail(data=str(e))
+    except Exception as e:
+        return response_base.__response(data=f"Something went wrong: {str(e)}")
    
   

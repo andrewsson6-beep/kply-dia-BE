@@ -57,6 +57,31 @@ class FamilyService:
                 raise ValueError("Family not found")
             return  FamilyDetailsResponseSchema.model_validate(contribution)
         
+    @staticmethod
+    async def update_family_contribution_service(request, data):
+        """Service to update a family contribution"""
+        token = get_token(request)
+        user_id = jwt_decode(token).id  
+
+        async with async_db_session.begin() as db:
+            contribution = await daoFamily.update_family_contribution(
+                db, user_id=user_id, data=data
+            )
+            return FamilContributionResponseSchema.model_validate(contribution)
+
+    @staticmethod
+    async def delete_family_contribution_service(request, data):
+        """Service to delete a family contribution"""
+        token = get_token(request)
+        user_id = jwt_decode(token).id  
+
+        async with async_db_session.begin() as db:
+            deleted = await daoFamily.delete_family_contribution(
+                db, user_id=user_id, fcon_id=data
+            )
+            if not deleted:
+                raise ValueError("Contribution not found or already deleted")
+        
     
     
 
