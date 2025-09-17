@@ -23,7 +23,7 @@ def create_database_url(unittest: bool = False) -> URL:
         password=settings.DATABASE_PASSWORD,
         host=settings.DATABASE_HOST,
         port=settings.DATABASE_PORT,
-        database=settings.DATABASE_SCHEMA if not unittest else f'{settings.DATABASE_SCHEMA}_test',
+        database=settings.DATABASE_NAME if not unittest else f'{settings.DATABASE_NAME}_test',
     )
     if settings.DATABASE_TYPE == 'mysql':
         url.update_query_dict({'charset': settings.DATABASE_CHARSET})
@@ -53,7 +53,7 @@ def create_async_engine_and_session(url: str | URL) -> tuple[AsyncEngine, async_
             pool_use_lifo=False,  
         )
     except Exception as e:
-        print("❌Database connection failed: {}",e)
+        print(f"❌Database connection failed: {e}")
         # log.error('❌ Database connection failed: {}', e)
         sys.exit()
     else:

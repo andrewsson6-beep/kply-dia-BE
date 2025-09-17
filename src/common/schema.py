@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict
-from src.core.config import settings
+from core.config import settings
 class SchemaBase(BaseModel):
     """Base schema configuration"""
 

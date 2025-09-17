@@ -9,9 +9,9 @@ class Settings(BaseSettings):
     VERSION: str = "1.0.0"
     DEBUG: bool = False
 
-    # Server settings (updated to 8080)
-    # HOST: str = "127.0.0.1"  # Default to localhost for security
-    # PORT: int = 8000         # <-- Changed to 8080
+    # Server settings
+    HOST: str = "127.0.0.1"  # Default to localhost for security
+    PORT: int = 8000          # Override via env if needed
 
     # Time settings
     DATETIME_TIMEZONE: str = "Asia/Kolkata"
@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     
     # Pydantic configuration
     model_config = SettingsConfigDict(
-        env_file=f"{ROOT_PATH}\.env",  # Load .env file
+        env_file=ROOT_PATH / ".env",  # Load .env file using Path to avoid escape issues
         env_file_encoding="utf-8",
         case_sensitive=False,  # Allow lowercase env vars (e.g., "port=8080")
         extra="ignore"
@@ -31,8 +31,7 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_SECRET: str
 
     DATABASE_TYPE:str
-   
-
+    DATABASE_NAME:str
     DATABASE_HOST: str
     DATABASE_PORT: int
     DATABASE_USER: str
@@ -57,10 +56,12 @@ class Settings(BaseSettings):
     ]
     CORS_ALLOWED_ORIGINS: list[str] = [ 
         "http://localhost:4200",
+        "http://localhost:5173",
+        
     ]
 
 
-    
+        
 
 
 settings = Settings()
