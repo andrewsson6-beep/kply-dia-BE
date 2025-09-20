@@ -140,6 +140,21 @@ class InstitutionDAO:
 
         await db.commit()
         return updated_contribution
+    
+    async def delete_institution_query(self, db: AsyncSession, user_id: int, institution: int) -> bool:
+        """Soft delete individual"""
+        stmt = (
+            update(self.model)
+            .where(self.model.ins_id == institution, self.model.ins_is_deleted == False)
+            .values(
+                ins_is_deleted=True,
+                ins_updated_by=user_id
+            )
+            .returning(self.model)
+        )
+        result = await db.execute(stmt)
+        await db.commit()
+        return result.scalar_one_or_none()
 
     
 

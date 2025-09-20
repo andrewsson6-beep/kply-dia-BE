@@ -79,3 +79,14 @@ async def edit_institution_contribution(request:Request,data:InstitutionContribu
    except Exception as e:
         return response_base.fail(data=f"Something went wrong {str(e)}")
 
+
+@router.post("/delete-institution", dependencies=[DependsJwtAuth])
+async def delete_institution(request: Request, data: InstitutionDetailRequestSchema):
+    """Delete an Institution"""
+    try:
+        await institutionservice.delete_institution_details(request, data.institutionId)
+        return response_base.success(data="Insstitution deleted successfully")
+    except ValueError as e:
+        return response_base.fail(data=str(e))
+    except Exception as e:
+        return response_base.__response(data=f"Something went wrong: {str(e)}")

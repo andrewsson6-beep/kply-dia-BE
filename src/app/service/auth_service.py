@@ -1,5 +1,7 @@
 from email import errors
+from app.models.systemuser_model import SystemUser
 from app.schema.auth_schema import ChangePasswordSchema, LoginSchemaBase, UserAuthenticatedDetails
+from app.schema.user_schema import UserCreateSchema, UserInfoSchemaBase
 from common.security.jwt import create_access_token, get_token, jwt_decode, password_verify
 from database.db import async_db_session
 from common.response.response_schema import  response_base
@@ -63,56 +65,56 @@ class AuthService:
 
 
     
-    # async def create_newuser(self, request, obj: UserCreateSchema) -> UserInfoSchemaBase | dict:
-    #     async with async_db_session.begin() as db:
-    #         # Check duplicate email
-    #         existing_user = await user_dao.getuser_by_email(db, obj.userEmail)
-    #         if existing_user:
-    #             return {
-    #                 "code": 400,
-    #                 "msg": "User already exists",
-    #                 "data": obj.userEmail
-    #             }
+    async def create_newuser(self, request, obj: UserCreateSchema) -> UserInfoSchemaBase | dict:
+        async with async_db_session.begin() as db:
+            # Check duplicate email
+            existing_user = await user_dao.getuser_by_email(db, obj.userEmail)
+            if existing_user:
+                return {
+                    "code": 400,
+                    "msg": "User already exists",
+                    "data": obj.userEmail
+                }
 
-    #         # Hash password
-    #         salt = bcrypt.gensalt()
-    #         hashed_pw = get_hash_password(obj.userPassword,salt)
+            # Hash password
+            salt = bcrypt.gensalt()
+            hashed_pw = get_hash_password(obj.userPassword,salt)
 
-    #         # Prepare data for DB
-    #         user_dict = {
-    #             "usr_username": obj.userName,
-    #             "usr_email": obj.userEmail,
-    #             "usr_password_hash": hashed_pw,
-    #             "usr_rol_id": obj.userRoleId,
-    #             "usr_status": "active"
-    #         }
+            # Prepare data for DB
+            user_dict = {
+                "usr_username": obj.userName,
+                "usr_email": obj.userEmail,
+                "usr_password_hash": hashed_pw,
+                "usr_rol_id": obj.userRoleId,
+                "usr_status": "active"
+            }
 
-    #         # Save in DB
-    #         new_user = await user_dao.create_user(db, user_dict)
+            # Save in DB
+            new_user = await user_dao.create_user(db, user_dict)
 
-    #         # Return as schema
-    #         return UserInfoSchemaBase.model_validate(new_user)
+            # Return as schema
+            return UserInfoSchemaBase.model_validate(new_user)
             
-    # @staticmethod
-    # async def all_users_list(request: Request) -> SystemUser:
-    #     """
-    #         Add New User.
+    @staticmethod
+    async def all_users_list(request: Request) -> SystemUser:
+        """
+            Add New User.
 
-    #         :param : No Params Used
-    #         :return: A User object if found, otherwise raises NotFoundError.
-    #     """
-    #     async with async_db_session() as db:
-    #         # token = get_token(request)
-    #         # token_payload = jwt_decode(token).id
-    #         users = await user_dao.all_users_query(db)
-    #         if users:
-    #             return  [UserInfoSchemaBase.model_validate(user) for user in users]
-    #         else:
-    #             return {
-    #                 "code": 400,
-    #                 "msg": "Bad Request",
-    #                 "data": "Invalid Credentials"
-    #             }
+            :param : No Params Used
+            :return: A User object if found, otherwise raises NotFoundError.
+        """
+        async with async_db_session() as db:
+            # token = get_token(request)
+            # token_payload = jwt_decode(token).id
+            users = await user_dao.all_users_query(db)
+            if users:
+                return  [UserInfoSchemaBase.model_validate(user) for user in users]
+            else:
+                return {
+                    "code": 400,
+                    "msg": "Bad Request",
+                    "data": "Invalid Credentials"
+                }
             
     @staticmethod
     async def change_password_service(request:Request, obj: ChangePasswordSchema):

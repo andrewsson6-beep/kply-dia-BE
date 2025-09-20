@@ -1,5 +1,8 @@
 from dataclasses import Field
 from decimal import Decimal
+from typing import List, Optional
+from app.schema.community_schema import CommunityResponseSchema
+from app.schema.parish_schema import ParishResponseSchema
 from common.schema import SchemaBase
 from pydantic import Field
 
@@ -25,3 +28,37 @@ class ForaneInfoSchemaBase(SchemaBase):
 class ForaneParishRequestSchema(SchemaBase):
     """Request schema to fetch parishes under a Forane"""
     foraneId: int = Field(..., alias="forane_id", description="Forane Id")
+
+
+
+class ForaneDetailSchema(SchemaBase):
+    for_id: int
+    for_code: Optional[str]
+    for_unique_no: Optional[int]
+    for_name: str
+    for_location: Optional[str]
+    for_vicar_name: Optional[str]
+    for_total_contribution_amount: Optional[Decimal] = Field(default=0)
+    for_contact_number: Optional[str]
+    parishes: List[ParishResponseSchema] = []
+    communities: List[CommunityResponseSchema] = []
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+
+
+
+class ForaneUpdateSchema(SchemaBase):
+    """Schema for updating Forane details"""
+
+    for_id: int = Field(..., description="Forane ID to update")
+    for_name: Optional[str] = None
+    for_location: Optional[str] = None
+    for_vicar_name: Optional[str] = None
+    for_contact_number: Optional[str] = None
+    for_total_contribution_amount: Optional[Decimal] = None
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True

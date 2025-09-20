@@ -1,7 +1,7 @@
 from app.models.forane_model import Forane
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import func, insert, select
-from sqlalchemy.orm import selectinload
+from sqlalchemy import func, insert, select, update
+from sqlalchemy.orm import selectinload,noload
 from app.models.parish_model import Parish
 from app.models.systemuser_model import SystemUser
 from app.schema.forane_schema import ForaneInfoSchemaBase
@@ -37,7 +37,7 @@ class ForaneDAO:
                 for_name=forane_data.forName,
                 for_location=forane_data.forLocation,
                 for_vicar_name=forane_data.forVicarName,
-                for_total_contribution_amount=forane_data.forTotalContribution,
+                # for_total_contribution_amount=forane_data.forTotalContribution,
                 for_contact_number=forane_data.forContactNumber,
             )
             .returning(self.model)   # so we get the inserted row back
@@ -45,6 +45,27 @@ class ForaneDAO:
         result = await db.execute(stmt)
         await db.commit()
         return result.scalar_one()
+    
+
+    async def get_forane_with_parishes(self, db: AsyncSession, forane_id: int) -> Forane | None:
+        stmt = (
+            select(self.model)
+            .options(selectinload(self.model.parishes),selectinload(self.model.communities))  # eager load parishes
+            .where(self.model.for_id == forane_id, self.model.for_is_deleted == False)
+        )
+        result = await db.execute(stmt)
+        return result.scalar_one_or_none()
+    
+    async def update_forane_details(self, db: AsyncSession, forane_id: int, update_data: dict) -> Forane | None:
+        stmt = (
+            update(self.model)
+            .where(self.model.for_id == forane_id, self.model.for_is_deleted == False)
+            .values(**update_data)
+            .returning(self.model).options(noload(Forane.parishes))
+        )
+        result = await db.execute(stmt)
+        await db.commit()
+        return result.scalar_one_or_none()
     
 
     

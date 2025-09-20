@@ -90,3 +90,43 @@ class InstitutionContributionResponseSchema(SchemaBase):
         from_attributes = True
         populate_by_name = True
 
+
+
+# Family Contribution Schemas
+# ------------------------------------
+
+
+class FamilContributionCreateSchema(SchemaBase):
+    """Request schema for creating a contribution"""
+    familyId: int = Field(..., alias="fcon_fam_id", description="Family ID")
+    amount: float = Field(..., alias="fcon_amount", description="Contribution Amount")
+    purpose: Optional[str] = Field(None, alias="fcon_purpose", description="Contribution Purpose")
+
+
+class FamilContributionResponseSchema(SchemaBase):
+    fcon_id: int
+    fcon_fam_id: int
+    fcon_amount: Decimal
+    fcon_date: datetime
+    fcon_purpose: Optional[str]
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+
+
+class FamilContributionUpdateSchema(SchemaBase):
+    """Schema for updating family contributions"""
+
+    fcon_id: int = Field(..., description="Contribution ID to update")
+    fcon_amount: Optional[Decimal] = None
+    fcon_purpose: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+
+class FamilContributionDeleteSchema(SchemaBase):
+    """Schema for deleting family contributions"""
+    fcon_id: int
+

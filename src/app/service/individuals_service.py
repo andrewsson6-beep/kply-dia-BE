@@ -1,6 +1,7 @@
 from fastapi import Request
 from app.models.individual_model import Individual
 from app.schema.individuals_schema import IndividualDetailRequestSchema, IndividualDetailSchema, IndividualUpdateSchema, IndividualsInfoSchemaBase
+from common.security.jwt import get_token, jwt_decode
 from database.db import async_db_session
 from app.dao.individual_dao import dao_individuals
 from common.response.response_schema import  response_base
@@ -63,6 +64,20 @@ class IndividualsService:
                 raise ValueError("Contribution not found or already deleted")
 
             return IndividualContributionResponseSchema.model_validate(updated)
+    
+
+    @staticmethod 
+    async def delete_individual_details(request:Request, individualId:int) -> IndividualContributionResponseSchema:
+        token = get_token(request)
+        user_id = jwt_decode(token).id  
+        async with async_db_session.begin() as db:
+            deleted = await dao_individuals.delete_individual_query(
+                db, user_id=user_id, individualId=individualId
+            )
+            if not deleted:
+                raise ValueError("Individual is  not found or already deleted")
+
+
 
 
             

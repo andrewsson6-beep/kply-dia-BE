@@ -63,12 +63,16 @@ def jwt_decode(token: str) -> TokenPayload:
     :param token: JWT token string
     :return: Decoded token payload
     """
+   
     try:
-        payload = jwt.decode(token, settings.TOKEN_SECRET_KEY, algorithms=[settings.TOKEN_ALGORITHM])
+        payload = jwt.decode(token, settings.TOKEN_SECRET_KEY, algorithms=settings.TOKEN_ALGORITHM)
         session_uuid = payload.get('session_uuid') or 'debug'
         user_id = payload.get('sub')
         expire_time = payload.get('exp')
+
+       
         if not user_id:
+           
             raise TokenError(msg='Token invalid')
     except ExpiredSignatureError:
         raise TokenError(msg='Token expired')
