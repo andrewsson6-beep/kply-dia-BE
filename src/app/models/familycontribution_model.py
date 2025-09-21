@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import  List
 from common.model import Base,id_key
-from sqlalchemy import DateTime,String,Boolean,Integer,Text,Boolean, DateTime,ForeignKey, Numeric, BigInteger
+from sqlalchemy import Date, DateTime,String,Boolean,Integer,Text,Boolean, DateTime,ForeignKey, Numeric, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column,relationship
 from sqlalchemy.sql import func
 class FamilyContribution(Base):
@@ -10,7 +10,7 @@ class FamilyContribution(Base):
     fcon_id :Mapped[id_key] = mapped_column(init=False)
     fcon_fam_id = mapped_column(Integer, ForeignKey("kply_families.fam_id"), nullable=False)
     fcon_amount = mapped_column(Numeric(12, 2), nullable=False)
-    fcon_date = mapped_column(DateTime(timezone=True), server_default=func.now())
+    fcon_date = mapped_column(Date,nullable=True)
     fcon_purpose = mapped_column(String(255))
     fcon_is_deleted = mapped_column(Boolean, default=False)
     fcon_created_at = mapped_column(DateTime(timezone=True), server_default=func.now())

@@ -77,6 +77,7 @@ class InstitutionDAO:
                 incon_amount=data.amount,
                 incon_purpose=data.purpose,
                 incon_is_deleted=False,
+                incon_date=data.institutionContributionDate
             )
             .returning(InstitutionContribution)
         )

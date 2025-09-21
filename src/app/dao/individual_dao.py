@@ -60,6 +60,7 @@ class IndividualDAO:
                 icon_amount=data.amount,
                 icon_purpose=data.purpose,
                 icon_is_deleted=False,
+                icon_date=data.contributionDate
             )
             .returning(IndividualContribution)
         )

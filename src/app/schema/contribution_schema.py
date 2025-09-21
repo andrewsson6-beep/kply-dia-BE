@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional
 from common.schema import SchemaBase
@@ -14,7 +14,7 @@ class IndividualContributionCreateSchema(SchemaBase):
     individualId: int = Field(..., alias="icon_ind_id", description="Individual ID")
     amount: float = Field(..., alias="icon_amount", description="Contribution Amount")
     purpose: Optional[str] = Field(None, alias="icon_purpose", description="Contribution Purpose")
-
+    contributionDate: Optional[date] = Field(None, alias="icon_date")
 
 class IndividualContributionResponseSchema(SchemaBase):
     """Response schema for a contribution"""
@@ -32,7 +32,7 @@ class IndividualContributionResponseSchema(SchemaBase):
 class IndividualContributionUpdateSchema(SchemaBase):
     icon_id: int = Field(..., description="Contribution ID to update")
     icon_amount: Optional[Decimal] = None
-    icon_date: Optional[datetime] = None
+    icon_date: Optional[date] = None
     icon_purpose: Optional[str] = None
 
     class Config:
@@ -51,7 +51,7 @@ class InstitutionContributionCreateSchema(SchemaBase):
     institutionId: int = Field(..., alias="incon_ins_id", description="Institution ID")
     amount: float = Field(..., alias="incon_amount", description="Contribution Amount")
     purpose: Optional[str] = Field(None, alias="incon_purpose", description="Contribution Purpose")
-
+    institutionContributionDate: Optional[date] = Field(None, alias="incon_date", description="Contribution Purpose")
 
 class InstitutionContributionResponseSchema(SchemaBase):
     incon_id: int
@@ -72,7 +72,7 @@ class InstitutionContributionUpdateSchema(SchemaBase):
     incon_amount: Optional[Decimal] = None
     incon_purpose: Optional[str] = None
     ins_updated_at: Optional[datetime] = None
-
+    incon_date: Optional[date] = None
     class Config:
         from_attributes = True
         populate_by_name = True
@@ -102,7 +102,7 @@ class FamilContributionCreateSchema(SchemaBase):
     familyId: int = Field(..., alias="fcon_fam_id", description="Family ID")
     amount: float = Field(..., alias="fcon_amount", description="Contribution Amount")
     purpose: Optional[str] = Field(None, alias="fcon_purpose", description="Contribution Purpose")
-
+    familyContributionDate: Optional[date] = Field(None, alias="fcon_date", description="Contribution Date")
 
 class FamilContributionResponseSchema(SchemaBase):
     fcon_id: int
@@ -122,6 +122,7 @@ class FamilContributionUpdateSchema(SchemaBase):
     fcon_id: int = Field(..., description="Contribution ID to update")
     fcon_amount: Optional[Decimal] = None
     fcon_purpose: Optional[str] = None
+    fcon_date: Optional[date] = None 
 
     class Config:
         from_attributes = True

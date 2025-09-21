@@ -77,6 +77,7 @@ class FamilyDAO:
                 fcon_is_deleted=False,
                 fcon_created_by=user_id,
                 fcon_updated_by=user_id,
+                fcon_date=data.familyContributionDate
             )
             .returning(FamilyContribution)
             .options(noload(FamilyContribution.family))
@@ -194,6 +195,7 @@ class FamilyDAO:
                 fcon_amount=new_amount,
                 fcon_purpose=data.fcon_purpose,
                 fcon_updated_by=user_id,
+                fcon_date=data.fcon_date
             )
             .returning(FamilyContribution).options(noload(FamilyContribution.family))
         )
