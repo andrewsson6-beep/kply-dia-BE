@@ -71,7 +71,6 @@ class InstitutionContributionUpdateSchema(SchemaBase):
     incon_id: int = Field(..., description="Contribution ID to update")
     incon_amount: Optional[Decimal] = None
     incon_purpose: Optional[str] = None
-    ins_updated_at: Optional[datetime] = None
     incon_date: Optional[date] = None
     class Config:
         from_attributes = True
