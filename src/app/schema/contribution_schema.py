@@ -108,7 +108,7 @@ class FamilContributionResponseSchema(SchemaBase):
     fcon_id: int
     fcon_fam_id: int
     fcon_amount: Decimal
-    fcon_date: datetime
+    fcon_date: Optional[date]
     fcon_purpose: Optional[str]
 
     class Config:

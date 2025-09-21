@@ -200,7 +200,7 @@ class FamilyDAO:
             .returning(FamilyContribution).options(noload(FamilyContribution.family))
         )
         result = await db.execute(stmt)
-        updated_contribution = result.scalar_one()
+        updated_contribution = result.scalar_one_or_none()
 
         # 3. Cascade updates (if delta != 0)
         if delta != 0:

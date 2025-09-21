@@ -67,6 +67,8 @@ class FamilyService:
             contribution = await daoFamily.update_family_contribution(
                 db, user_id=user_id, data=data
             )
+            if not contribution:
+                raise ValueError("Family contribution not found or already deleted")
             return FamilContributionResponseSchema.model_validate(contribution)
 
     @staticmethod
