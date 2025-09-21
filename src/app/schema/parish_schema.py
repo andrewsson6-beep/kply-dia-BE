@@ -16,6 +16,7 @@ class ParishCreateSchema(SchemaBase):
     parLocation: Optional[str] = Field(None, alias="par_location", description="Parish Location")
     parVicarName: Optional[str] = Field(None, alias="par_vicar_name", description="Parish Vicar Name")
     parTotalContribution: Optional[float] = Field(0, alias="par_total_contribution_amount", description="Total Contribution")
+    parContactNumber:str | None  = Field(default=None, description="parish Contact Number",alias="par_contact_number")
 
 
 class ParishResponseSchema(SchemaBase):
@@ -28,17 +29,20 @@ class ParishResponseSchema(SchemaBase):
     parLocation: Optional[str] = Field(None, alias="par_location")
     parVicarName: Optional[str] = Field(None, alias="par_vicar_name")
     parTotalContribution: Optional[float] = Field(0, alias="par_total_contribution_amount")
+    parContactNumber: Optional[str] = Field(None, alias="par_contact_number")
+
 
     class Config:
         from_attributes = True
         populate_by_name = True
 
 
-class ParishBaseSchema(BaseModel):
+class ParishBaseSchema(SchemaBase):
     par_code: Optional[str] = None
     par_name: Optional[str] = None
     par_location: Optional[str] = None
     par_vicar_name: Optional[str] = None
+    par_contact_number: Optional[str] = None
 
 
 class ParishUpdateSchema(ParishBaseSchema):

@@ -11,8 +11,8 @@ class InstitutionsInfoSchemaBase(SchemaBase):
     """Institutions Parameters"""
 
     insId:int | None  = Field(default=None, description="Institution Id",alias="ins_id")
-    insForId:int | None =  Field(default=None, description=" Institution Forane Id",alias="ins_for_id")
-    insParId: int | None = Field(default=None, description="Institution Parish Id",alias="ins_par_id")
+    # insForId:int | None =  Field(default=None, description=" Institution Forane Id",alias="ins_for_id")
+    # insParId: int | None = Field(default=None, description="Institution Parish Id",alias="ins_par_id")
     # insUniqueNo:int | None = Field(default=None,  description="Institution Unique Number",alias="ins_unique_no")
     # insCode:str | None  = Field(default=None, description="Institution Code",alias="ins_code")
     insName:str | None  = Field(default=None, description="Institution Name",alias="ins_name")
@@ -55,6 +55,7 @@ class InstitutionUpdateSchema(SchemaBase):
     ins_email: Optional[str] = None
     ins_website: Optional[str] = None
     ins_head_name: Optional[str] = None
+    
 
 
     class Config:

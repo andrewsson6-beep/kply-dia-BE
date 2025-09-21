@@ -40,7 +40,7 @@ async def community_details(request:Request,data: CommunityRequestSchema):
         return response_base.__response(data=f"Something went wrong { str(e) }")
 
 
-@router.post("/update-community", summary="Edit Community Details")
+@router.post("/update-community",dependencies=[DependsJwtAuth])
 async def edit_community(data: CommunityUpdateSchema, request: Request):
     try:
         updated_details = await communityservice.update_community_details(request, data)

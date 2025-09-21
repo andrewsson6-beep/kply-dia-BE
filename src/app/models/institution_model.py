@@ -9,8 +9,8 @@ class Institution(Base):
     __tablename__ = "kply_institutions"
 
     ins_id :Mapped[id_key] = mapped_column(init=False)
-    ins_for_id = mapped_column(Integer, ForeignKey("kply_foranes.for_id"), nullable=True)
-    ins_par_id = mapped_column(Integer, ForeignKey("kply_parishes.par_id"), nullable=True)
+    # ins_for_id = mapped_column(Integer, ForeignKey("kply_foranes.for_id"), nullable=True)
+    # ins_par_id = mapped_column(Integer, ForeignKey("kply_parishes.par_id"), nullable=True)
     ins_unique_no = mapped_column(BigInteger, unique=True, nullable=False)
     ins_code = mapped_column(String(50), unique=True)
     ins_name = mapped_column(String(255), nullable=False)
@@ -27,6 +27,6 @@ class Institution(Base):
     ins_updated_at = mapped_column(DateTime(timezone=True), onupdate=func.now())
     ins_updated_by = mapped_column(Integer, ForeignKey("kply_system_users.usr_id"))
 
-    forane = relationship("Forane", back_populates="institutions")
-    parish = relationship("Parish", back_populates="institutions")
+    # forane = relationship("Forane", back_populates="institutions", foreign_keys=[ins_for_id],uselist=False,)
+    # parish = relationship("Parish", back_populates="institutions", foreign_keys=[ins_par_id],uselist=False,)
     contributions = relationship("InstitutionContribution", back_populates="institution")

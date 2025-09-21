@@ -22,4 +22,4 @@ class Forane(Base):
 
     parishes = relationship("Parish", back_populates="forane")
     communities = relationship("Community", back_populates="forane")
-    institutions = relationship("Institution", back_populates="forane")
+    # institutions = relationship("Institution", back_populates="forane")
