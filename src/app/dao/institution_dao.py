@@ -32,12 +32,14 @@ class InstitutionDAO:
 
         # Generate institution code
         new_code = f"INS-{new_unique_no}"
+         # Ensure proper handling of optional parents
+      
 
         stmt = (
             insert(self.model)
             .values(
-                ins_for_id=institution_data.insForId,
-                ins_par_id=institution_data.insParId,
+                # ins_for_id=ins_for_id,
+                # ins_par_id=ins_par_id,
                 ins_unique_no=new_unique_no,
                 ins_code=new_code,
                 ins_name=institution_data.insName,
