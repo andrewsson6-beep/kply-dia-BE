@@ -14,6 +14,7 @@ class Parish(Base):
     par_name = mapped_column(String(255), nullable=False)
     par_location = mapped_column(String(255))
     par_vicar_name = mapped_column(String(255))
+    par_contact_number = mapped_column(String(255))
     par_total_contribution_amount = mapped_column(Numeric(12, 2), default=0)
     par_is_deleted = mapped_column(Boolean, default=False)
     par_created_at = mapped_column(DateTime(timezone=True), server_default=func.now())

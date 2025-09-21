@@ -1,7 +1,7 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func, insert, select, update
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload,noload
 from app.models.parish_model import Parish
 from app.models.systemuser_model import SystemUser
 from app.schema.parish_schema import ParishCreateSchema
@@ -35,7 +35,8 @@ class ParishDAO:
                 par_location=parish_data.parLocation,
                 par_vicar_name=parish_data.parVicarName,
                 par_total_contribution_amount=parish_data.parTotalContribution or 0,
-                par_is_deleted=False
+                par_is_deleted=False,
+                par_contact_number=parish_data.parContactNumber
             )
             .returning(self.model)  # return the inserted row
         )
@@ -74,7 +75,7 @@ class ParishDAO:
             update(self.model)
             .where(self.model.par_id == par_id, self.model.par_is_deleted == False)
             .values(**update_data, par_updated_by=user_id)
-            .returning(self.model)
+            .returning(self.model).options(noload(self.model.communities)) 
         )
         result = await db.execute(stmt)
         return result.scalar_one_or_none()
