@@ -13,7 +13,7 @@ class SystemUser(Base):
     usr_password_hash = mapped_column(Text, nullable=False)
     usr_email = mapped_column(String(255), unique=True, nullable=False)
     usr_full_name = mapped_column(String(255),)
-    usr_rol_id = mapped_column(Integer, ForeignKey("kply_roles.rol_id"), nullable=False)
+    usr_rol_id = mapped_column(Integer, ForeignKey("kply_roles.rol_id"), nullable=True)
     usr_status = mapped_column(String(20), default="active")
     usr_is_deleted = mapped_column(Boolean, default=False)
     usr_created_at = mapped_column(DateTime(timezone=True), server_default=func.now())

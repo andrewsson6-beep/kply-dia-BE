@@ -30,12 +30,27 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str 
     GOOGLE_CLIENT_SECRET: str
 
+    # Database connection - can use either DATABASE_URL or individual parameters
+    DATABASE_URL: str | None = None
+    
     DATABASE_TYPE:str
     DATABASE_NAME:str
     DATABASE_HOST: str
     DATABASE_PORT: int
     DATABASE_USER: str
     DATABASE_PASSWORD: str
+
+    # SSL settings for database connections (PostgreSQL)
+    # verify-full: verify CA and hostname (recommended)
+    # verify-ca: verify CA only (skip hostname)
+    # require: encrypt only, do not verify (not recommended)
+    # disable: no SSL (generally not allowed by Supabase)
+    DATABASE_SSL_MODE: Literal['verify-full', 'verify-ca', 'require', 'disable'] = 'disable'
+    # Optional custom CA bundle path (PEM). If not provided, certifi bundle is used.
+    DATABASE_SSL_CERT_FILE: str | None = None
+
+    # asyncpg prepared-statement cache; set to 0 when using PgBouncer (transaction/statement mode)
+    DATABASE_STATEMENT_CACHE_SIZE: int = 0
 
     FASTAPI_API_V1_PATH: str = '/api/v1'
 

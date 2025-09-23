@@ -3,6 +3,7 @@ from app.schema.institutions_schema import InstitutionDetailRequestSchema, Insti
 from app.service.institutions_service import InstitutionService, institutionservice
 from fastapi import APIRouter, Request
 from common.response.response_schema import  ResponseSchemaModel, response_base
+from common.response.response_code import CustomResponseCode
 from common.security.jwt import DependsJwtAuth
 
 router = APIRouter()
@@ -65,7 +66,7 @@ async def edit_institution(request:Request,data:InstitutionUpdateSchema):
    except ValueError as e:
         return response_base.fail(data=str(e))
    except Exception as e:
-        return response_base.__response(data=f"Something went wrong { str(e) }")
+       return response_base.fail(res=CustomResponseCode.HTTP_500, data=f"Something went wrong { str(e) }")
 
 
 #TO Edit the Details Of the Specific Individual Contributions 
@@ -89,4 +90,4 @@ async def delete_institution(request: Request, data: InstitutionDetailRequestSch
     except ValueError as e:
         return response_base.fail(data=str(e))
     except Exception as e:
-        return response_base.__response(data=f"Something went wrong: {str(e)}")
+        return response_base.fail(res=CustomResponseCode.HTTP_500, data=f"Something went wrong: {str(e)}")

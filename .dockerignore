@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# VCS
+.git
+.gitignore
+
+# Envs
+.env
+.venv
+venv/
+pyenv/
+
+# Build artifacts
+build/
+dist/
+.eggs/
+*.egg-info/
+*.egg
+
+# IDE
+.vscode/
+.idea/
+
+# Node leftovers
+node_modules/
+
+# Local certs/secrets
+secrets/
+certs/
+*.crt
+*.pem
+*.cer

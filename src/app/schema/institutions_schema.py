@@ -5,6 +5,7 @@ from typing import List, Optional
 from app.schema.contribution_schema import InstitutionContributionResponseSchema
 from common.schema import SchemaBase
 from pydantic import Field
+from pydantic import model_validator
 
 
 class InstitutionsInfoSchemaBase(SchemaBase):
@@ -23,6 +24,15 @@ class InstitutionsInfoSchemaBase(SchemaBase):
     insWebsite:str | None  = Field(default=None, description="Institution Website",alias="ins_website")
     insHeadName:str | None  = Field(default=None, description="Institution Head Name",alias="ins_head_name")
     insContributionAmount: Decimal | None = Field(..., alias="ins_total_contribution_amount")
+    
+    @model_validator(mode="after")
+    def validate_parent_choice(self):
+        # Exactly one of ins_for_id or ins_par_id must be provided
+        if (self.insForId is None and self.insParId is None) or (
+            self.insForId is not None and self.insParId is not None
+        ):
+            raise ValueError("Provide exactly one of 'ins_for_id' or 'ins_par_id', not both or neither.")
+        return self
     
     class Config:
         from_attributes = True

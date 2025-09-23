@@ -2,6 +2,7 @@ from app.schema.community_schema import CommunityCreateSchema, CommunityListRequ
 from app.service.community_service import communityservice 
 from fastapi import APIRouter,Request
 from common.response.response_schema import  ResponseSchemaModel, response_base
+from common.response.response_code import CustomResponseCode
 from common.security.jwt import DependsJwtAuth
 
 router = APIRouter()
@@ -15,7 +16,7 @@ async def create_community_api(request:Request,data: CommunityCreateSchema) -> R
    except ValueError as e:
         return response_base.fail(data=str(e))
    except Exception as e:
-        return response_base.__response(data=f"Something went wrong { str(e) }")
+       return response_base.fail(res=CustomResponseCode.HTTP_500, data=f"Something went wrong { str(e) }")
 
 
 @router.post("/community-list", dependencies=[DependsJwtAuth])
@@ -26,7 +27,7 @@ async def list_communities(request:Request,data: CommunityListRequestSchema):
     except ValueError as e:
         return response_base.fail(data=str(e))
     except Exception as e:
-        return response_base.__response(data=f"Something went wrong { str(e) }")
+        return response_base.fail(res=CustomResponseCode.HTTP_500, data=f"Something went wrong { str(e) }")
 
 
 @router.post("/community-details", dependencies=[DependsJwtAuth])
@@ -37,7 +38,7 @@ async def community_details(request:Request,data: CommunityRequestSchema):
     except ValueError as e:
         return response_base.fail(data=str(e))
     except Exception as e:
-        return response_base.__response(data=f"Something went wrong { str(e) }")
+        return response_base.fail(res=CustomResponseCode.HTTP_500, data=f"Something went wrong { str(e) }")
 
 
 @router.post("/update-community",dependencies=[DependsJwtAuth])
@@ -48,7 +49,7 @@ async def edit_community(data: CommunityUpdateSchema, request: Request):
     except ValueError as e:
         return response_base.fail(data=str(e))
     except Exception as e:
-        return response_base.__response(data=f"Something went wrong { str(e) }")
+        return response_base.fail(res=CustomResponseCode.HTTP_500, data=f"Something went wrong { str(e) }")
  
   
 

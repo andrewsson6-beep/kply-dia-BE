@@ -122,3 +122,10 @@ dmypy.json
 
 #Pycharm IDE
 .idea
+
+# Local secrets and certificates (do not commit)
+secrets/
+certs/
+*.pem
+*.crt
+*.cer
