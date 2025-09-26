@@ -23,10 +23,9 @@ COPY . .
 # Ensure Python can import from src
 ENV PYTHONPATH=/app/src
 
-# SSL disabled per request (override in Cloud Run later when ready)
-ENV DATABASE_SSL_MODE=disable
-
-# Cloud Run default port
+# Default environment variables (can be overridden in Cloud Run)
+ENV DATABASE_SSL_MODE=require
+ENV HOST=0.0.0.0
 ENV PORT=8080
 EXPOSE 8080
 
