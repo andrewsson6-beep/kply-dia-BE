@@ -13,10 +13,14 @@ class ForaneDAO:
     def __init__(self, model):
         self.model = model
     
-    async def forane_list_query(self, db: AsyncSession) -> Forane:
-       stmt = (select(self.model))
-       result = await db.execute(stmt)
-       return result.scalars().all()
+    async def forane_list_query(self, db: AsyncSession) -> list[Forane]:
+        stmt = (
+            select(self.model)
+            .where(self.model.for_is_deleted == False)  # Exclude deleted foranes
+        )
+        result = await db.execute(stmt)
+        return result.scalars().all()
+
 
     async def create_forane(self, db: AsyncSession, forane_data: ForaneInfoSchemaBase) -> Forane:
 
@@ -65,6 +69,16 @@ class ForaneDAO:
         )
         result = await db.execute(stmt)
         await db.commit()
+        return result.scalar_one_or_none()
+    
+    async def delete_forane(self, db: AsyncSession, for_id: int, user_id: int) -> Forane | None:
+        stmt = (
+            update(self.model)
+            .where(self.model.for_id == for_id, self.model.for_is_deleted == False)
+            .values(for_is_deleted=True, for_updated_by=user_id)
+            .returning(self.model)
+        )
+        result = await db.execute(stmt)
         return result.scalar_one_or_none()
     
 

@@ -1,4 +1,4 @@
-from app.schema.forane_schema import ForaneInfoSchemaBase, ForaneParishRequestSchema, ForaneUpdateSchema
+from app.schema.forane_schema import ForaneDeleteSchema, ForaneInfoSchemaBase, ForaneParishRequestSchema, ForaneUpdateSchema
 from app.service.forane_service import foraneservice 
 from fastapi import APIRouter,Request
 from common.response.response_schema import  ResponseSchemaModel, response_base
@@ -33,6 +33,16 @@ async def edit_forane(data: ForaneUpdateSchema):
         return response_base.fail(data=str(e))
     except Exception as e:
         return response_base.fail(data=f"Something went wrong {str(e)}")
+
+@router.post("/delete-forane", dependencies=[DependsJwtAuth])
+async def delete_forane(request: Request, obj: ForaneDeleteSchema) -> ResponseSchemaModel:
+    try:
+        msg = await foraneservice.delete_forane_service(request, obj)
+        return response_base.success(data=msg)
+    except ValueError as e:
+        return response_base.fail(data=str(e))
+    except Exception as e:
+        return response_base.fail(data=f"Something went wrong: {str(e)}")
 
 
 

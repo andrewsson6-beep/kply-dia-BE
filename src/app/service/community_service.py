@@ -1,7 +1,7 @@
 from fastapi import Request
 from app.models.community_model import Community
 from app.models.forane_model import Forane
-from app.schema.community_schema import CommunityCreateSchema, CommunityDetailSchema, CommunityListRequestSchema, CommunityRequestSchema, CommunityResponseSchema, CommunityUpdateSchema
+from app.schema.community_schema import CommunityCreateSchema, CommunityDeleteSchema, CommunityDetailSchema, CommunityListRequestSchema, CommunityRequestSchema, CommunityResponseSchema, CommunityUpdateSchema
 from app.schema.forane_schema import ForaneInfoSchemaBase
 from common.security.jwt import get_token, jwt_decode
 from database.db import async_db_session
@@ -62,6 +62,18 @@ class CommunityService:
                 raise ValueError("Community not found or already deleted")
 
             return CommunityDetailSchema.model_validate(updated)
+        
+    
+    @staticmethod
+    async def delete_community_service(request: Request, data: CommunityDeleteSchema) -> str:
+        token = get_token(request)
+        user_id = jwt_decode(token).id
+
+        async with async_db_session.begin() as db:
+            deleted = await daoCommunity.delete_community(db, data.com_id, user_id)
+            if not deleted:
+                raise ValueError("Community not found or already deleted")
+            return f"Community with ID {data.com_id} deleted successfully"
         
     
     

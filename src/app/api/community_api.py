@@ -1,4 +1,4 @@
-from app.schema.community_schema import CommunityCreateSchema, CommunityListRequestSchema, CommunityRequestSchema, CommunityUpdateSchema
+from app.schema.community_schema import CommunityCreateSchema, CommunityDeleteSchema, CommunityListRequestSchema, CommunityRequestSchema, CommunityUpdateSchema
 from app.service.community_service import communityservice 
 from fastapi import APIRouter,Request
 from common.response.response_schema import  ResponseSchemaModel, response_base
@@ -49,6 +49,17 @@ async def edit_community(data: CommunityUpdateSchema, request: Request):
         return response_base.fail(data=str(e))
     except Exception as e:
         return response_base.__response(data=f"Something went wrong { str(e) }")
+
+
+@router.post("/delete-community", dependencies=[DependsJwtAuth])
+async def delete_community(request: Request, obj: CommunityDeleteSchema) -> ResponseSchemaModel:
+    try:
+        msg = await communityservice.delete_community_service(request, obj)
+        return response_base.success(data=msg)
+    except ValueError as e:
+        return response_base.fail(data=str(e))
+    except Exception as e:
+        return response_base.fail(data=f"Something went wrong: {str(e)}")
  
   
 

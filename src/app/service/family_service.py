@@ -4,7 +4,7 @@ from app.schema.contribution_schema import FamilContributionResponseSchema
 from common.security.jwt import get_token, jwt_decode
 from database.db import async_db_session
 from app.dao.family_dao import daoFamily
-from app.schema.family_schema  import FamilyCreateSchema, FamilyDetailsResponseSchema, FamilyRequestSchema,FamilyResponseSchema,FamilyUpdateSchema
+from app.schema.family_schema  import FamilyCreateSchema, FamilyDeleteSchema, FamilyDetailsResponseSchema, FamilyRequestSchema,FamilyResponseSchema,FamilyUpdateSchema
 
 
 class FamilyService:
@@ -83,6 +83,19 @@ class FamilyService:
             )
             if not deleted:
                 raise ValueError("Contribution not found or already deleted")
+    
+
+    @staticmethod
+    async def delete_family_service(request: Request, data: FamilyDeleteSchema) -> str:
+        token = get_token(request)
+        user_id = jwt_decode(token).id
+
+        async with async_db_session.begin() as db:
+            deleted = await daoFamily.delete_family(db, data.fam_id, user_id)
+            if not deleted:
+                raise ValueError("Family not found or already deleted")
+            return f"Family with ID {data.fam_id} deleted successfully"
+
         
     
     

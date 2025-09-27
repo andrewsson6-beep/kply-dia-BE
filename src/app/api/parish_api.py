@@ -1,5 +1,5 @@
 from app.schema.forane_schema import ForaneInfoSchemaBase, ForaneParishRequestSchema
-from app.schema.parish_schema import ParishCreateSchema, ParishRequestSchema, ParishUpdateSchema
+from app.schema.parish_schema import ParishCreateSchema, ParishDeleteSchema, ParishRequestSchema, ParishUpdateSchema
 from app.service.parish_service import parishservice
 from fastapi import APIRouter,Request
 from common.response.response_schema import  ResponseSchemaModel, response_base
@@ -43,3 +43,14 @@ async def parish_details(request:Request, data: ParishRequestSchema):
         return response_base.fail(data=str(e))
     except Exception as e:
         return response_base.fail(data=f"Something went wrong {str(e)}")
+
+@router.post("/delete-parish", dependencies=[DependsJwtAuth])
+async def delete_parish(request: Request, obj: ParishDeleteSchema) -> ResponseSchemaModel:
+    try:
+        msg = await parishservice.delete_parish_service(request, obj)
+        return response_base.success(data=msg)
+    except ValueError as e:
+        return response_base.fail(data=str(e))
+    except Exception as e:
+        return response_base.fail(data=f"Something went wrong: {str(e)}")
+

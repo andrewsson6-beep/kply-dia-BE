@@ -62,3 +62,7 @@ class ForaneUpdateSchema(SchemaBase):
     class Config:
         from_attributes = True
         populate_by_name = True
+
+class ForaneDeleteSchema(SchemaBase):
+    """Schema for deleting a Forane"""
+    for_id: int = Field(..., description="Forane ID to delete")

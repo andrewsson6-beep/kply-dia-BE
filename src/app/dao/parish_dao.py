@@ -46,10 +46,14 @@ class ParishDAO:
         return result.scalar_one()
     
 
-    async def parish_list_query(self, db: AsyncSession) -> Parish:
-       stmt = (select(self.model).where(self.model.par_is_deleted==False))
-       result = await db.execute(stmt)
-       return result.scalars().all()
+    async def parish_list_query(self, db: AsyncSession) -> list[Parish]:
+        stmt = (
+            select(self.model)
+            .where(self.model.par_is_deleted == False)  # exclude deleted
+        )
+        result = await db.execute(stmt)
+        return result.scalars().all()
+
     
     async def get_parishes_by_forane(self, db: AsyncSession, forane_id: int) -> list[Parish]:
         stmt = select(self.model).where(
@@ -79,6 +83,17 @@ class ParishDAO:
         )
         result = await db.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def delete_parish(self, db: AsyncSession, par_id: int, user_id: int) -> Parish | None:
+        stmt = (
+            update(self.model)
+            .where(self.model.par_id == par_id, self.model.par_is_deleted == False)
+            .values(par_is_deleted=True, par_updated_by=user_id)
+            .returning(self.model)
+        )
+        result = await db.execute(stmt)
+        return result.scalar_one_or_none()
+    
     
 
     

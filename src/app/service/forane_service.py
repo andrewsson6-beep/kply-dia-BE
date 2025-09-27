@@ -1,7 +1,8 @@
 from fastapi import Request
 from app.dao import forane_dao
 from app.models.forane_model import Forane
-from app.schema.forane_schema import ForaneDetailSchema, ForaneInfoSchemaBase, ForaneParishRequestSchema, ForaneUpdateSchema
+from app.schema.forane_schema import ForaneDeleteSchema, ForaneDetailSchema, ForaneInfoSchemaBase, ForaneParishRequestSchema, ForaneUpdateSchema
+from common.security.jwt import get_token, jwt_decode
 from database.db import async_db_session
 from app.dao.forane_dao import dao_forane
 from common.response.response_schema import  response_base
@@ -44,6 +45,19 @@ class ForaneService:
             if not updated:
                 raise ValueError("Forane not found or already deleted")
             return ForaneDetailSchema.model_validate(updated) 
+    
+
+    @staticmethod
+    async def delete_forane_service(request: Request, data: ForaneDeleteSchema) -> str:
+        """Soft delete a Forane"""
+        token = get_token(request)
+        user_id = jwt_decode(token).id  
+
+        async with async_db_session.begin() as db:
+            deleted_forane = await dao_forane.delete_forane(db, data.for_id, user_id)
+            if not deleted_forane:
+                raise ValueError("Forane not found or already deleted")
+            return f"Forane with ID {data.for_id} deleted successfully"
         
         
     

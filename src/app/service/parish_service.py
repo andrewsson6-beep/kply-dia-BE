@@ -2,7 +2,7 @@ from fastapi import Request
 
 from app.models.parish_model import Parish
 from app.schema.forane_schema import ForaneParishRequestSchema
-from app.schema.parish_schema import ParishCreateSchema, ParishDetailSchema, ParishResponseSchema, ParishUpdateSchema
+from app.schema.parish_schema import ParishCreateSchema, ParishDeleteSchema, ParishDetailSchema, ParishResponseSchema, ParishUpdateSchema
 from common.security.jwt import get_token, jwt_decode
 from database.db import async_db_session
 from common.response.response_schema import  response_base
@@ -65,6 +65,17 @@ class ParishService:
                 raise ValueError("Parish not found or already deleted")
 
             return ParishDetailSchema.model_validate(updated)
+    
+    @staticmethod
+    async def delete_parish_service(request: Request, data: ParishDeleteSchema) -> str:
+        token = get_token(request)
+        user_id = jwt_decode(token).id
+
+        async with async_db_session.begin() as db:
+            deleted_parish = await dao_parishs.delete_parish(db, data.par_id, user_id)
+            if not deleted_parish:
+                raise ValueError("Parish not found or already deleted")
+            return f"Parish with ID {data.par_id} deleted successfully"
         
             
             

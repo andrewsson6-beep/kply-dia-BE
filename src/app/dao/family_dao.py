@@ -311,6 +311,17 @@ class FamilyDAO:
                         for_updated_by=user_id,
                     )
                 )
+    
+
+    async def delete_family(self, db: AsyncSession, fam_id: int, user_id: int) -> Family | None:
+        stmt = (
+            update(self.model)
+            .where(self.model.fam_id == fam_id, self.model.fam_is_deleted == False)
+            .values(fam_is_deleted=True, fam_updated_by=user_id)
+            .returning(self.model)
+        )
+        result = await db.execute(stmt)
+        return result.scalar_one_or_none()
 
        
 

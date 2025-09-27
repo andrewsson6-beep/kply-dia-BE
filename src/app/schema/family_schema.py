@@ -45,3 +45,7 @@ class FamilyRequestSchema(SchemaBase):
 
 class FamilyDetailsResponseSchema(FamilyResponseSchema):
     contributions: Optional[List[FamilContributionResponseSchema]] = None
+
+class FamilyDeleteSchema(SchemaBase):
+    """Schema for deleting a Family"""
+    fam_id: int = Field(..., description="Family ID to delete")

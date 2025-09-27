@@ -77,6 +77,15 @@ class CommunityDAO:
         await db.commit()
         return result.scalar_one_or_none()
     
+    async def delete_community(self, db: AsyncSession, com_id: int, user_id: int) -> Community | None:
+        stmt = (
+            update(self.model)
+            .where(self.model.com_id == com_id, self.model.com_is_deleted == False)
+            .values(com_is_deleted=True, com_updated_by=user_id)
+            .returning(self.model)
+        )
+        result = await db.execute(stmt)
+        return result.scalar_one_or_none()
 
 
 

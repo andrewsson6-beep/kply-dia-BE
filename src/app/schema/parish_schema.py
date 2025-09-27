@@ -64,6 +64,11 @@ class ParishDetailSchema(ParishBaseSchema):
 
     class Config:
         from_attributes = True
+
+class ParishDeleteSchema(SchemaBase):
+    """Schema for deleting a Parish"""
+    par_id: int = Field(..., description="Parish ID to delete")
+
     
 
 

@@ -64,4 +64,9 @@ class CommunityDetailSchema(SchemaBase):
 class CommunityRequestSchema(SchemaBase):
     com_id: int
 
+class CommunityDeleteSchema(SchemaBase):
+    """Schema for deleting a Community"""
+    com_id: int = Field(..., description="Community ID to delete")
+
+
 
