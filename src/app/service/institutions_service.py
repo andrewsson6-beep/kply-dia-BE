@@ -1,7 +1,7 @@
 from fastapi import Request
 from app.models.institution_model import Institution
 from app.schema.contribution_schema import InstitutionContributionCreateSchema, InstitutionContributionResponseSchema, InstitutionContributionUpdateSchema
-from app.schema.institutions_schema import InstitutionDetailRequestSchema, InstitutionDetailSchema, InstitutionUpdateSchema, InstitutionsInfoSchemaBase
+from app.schema.institutions_schema import InstitutionDetailRequestSchema, InstitutionDetailSchema, InstitutionUpdateSchema, InstitutionsCreateSchemaBase, InstitutionsInfoSchemaBase
 from common.security.jwt import get_token, jwt_decode
 from database.db import async_db_session
 from app.dao.institution_dao import dao_institutions
@@ -21,7 +21,7 @@ class InstitutionService:
             return [InstitutionsInfoSchemaBase.model_validate(institution) for institution in institutions]
     
     @staticmethod
-    async def add_new_institution(request:Request, institution_data: InstitutionsInfoSchemaBase):
+    async def add_new_institution(request:Request, institution_data: InstitutionsCreateSchemaBase):
         """Create a new Institution"""
         async with async_db_session.begin() as db:
             new_institution = await dao_institutions.create_institution(db, institution_data)

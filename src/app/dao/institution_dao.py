@@ -4,7 +4,7 @@ from sqlalchemy import func, insert, select, update
 from app.models.institution_model import Institution
 from app.models.institutioncontribution_model import InstitutionContribution
 from app.schema.contribution_schema import InstitutionContributionCreateSchema
-from app.schema.institutions_schema import InstitutionsInfoSchemaBase
+from app.schema.institutions_schema import InstitutionsCreateSchemaBase, InstitutionsInfoSchemaBase
 from sqlalchemy.orm import selectinload,noload
 
 class InstitutionDAO:
@@ -18,7 +18,7 @@ class InstitutionDAO:
        result = await db.execute(stmt)
        return result.scalars().all()
     
-    async def create_institution(self, db: AsyncSession, institution_data: InstitutionsInfoSchemaBase) -> Institution:
+    async def create_institution(self, db: AsyncSession, institution_data: InstitutionsCreateSchemaBase) -> Institution:
         # Get the highest unique number
         stmt_max = select(func.max(self.model.ins_unique_no))
         result = await db.execute(stmt_max)

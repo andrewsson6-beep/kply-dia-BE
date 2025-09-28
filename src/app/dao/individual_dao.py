@@ -42,13 +42,30 @@ class IndividualDAO:
                 ind_phone_number=individual_data.indPhoneNumber,
                 ind_email=individual_data.indEmail,
                 ind_address=individual_data.indAddress,
-                ind_total_contribution_amount=0,
+                ind_total_contribution_amount=individual_data.indContributionAmount,
             )
             .returning(self.model)
         )
         result = await db.execute(stmt)
+        individual = result.scalar_one()
+
+        # 3. If initial contribution exists, insert into IndividualContribution
+        if individual_data.indContributionAmount and individual_data.indContributionAmount > 0:
+            stmt_contrib = (
+                insert(IndividualContribution)
+                .values(
+                    icon_ind_id=individual.ind_id,
+                    icon_amount=individual_data.indContributionAmount,
+                    icon_purpose="Initial Contribution",
+                    icon_is_deleted=False,
+                    icon_date=func.current_date(),  # or individual_data.contributionDate if provided
+                )
+            )
+            await db.execute(stmt_contrib)
+
+        # 4. Commit
         await db.commit()
-        return result.scalar_one()
+        return individual
     
 
     async def create_individuaL_contribution(self, db: AsyncSession, data: IndividualContributionCreateSchema) -> IndividualContribution:

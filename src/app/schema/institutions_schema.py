@@ -62,3 +62,16 @@ class InstitutionUpdateSchema(SchemaBase):
         from_attributes = True
         populate_by_name = True
 
+class InstitutionsCreateSchemaBase(SchemaBase):
+    """Institutions Parameters"""
+
+    insId:int | None  = Field(default=None, description="Institution Id",alias="ins_id")
+    insName:str | None  = Field(default=None, description="Institution Name",alias="ins_name")
+    insType:str | None  = Field(default=None, description="Institution Type",alias="ins_type")
+    insAddress: str | None = Field(default=None, description="Institution Address",alias="ins_address")
+    insPhone:str | None = Field(default=None,  description="Institution Phone",alias="ins_phone")
+    insEmail:str | None  = Field(default=None, description="Institution Email Address",alias="ins_email")
+    insWebsite:str | None  = Field(default=None, description="Institution Website",alias="ins_website")
+    insHeadName:str | None  = Field(default=None, description="Institution Head Name",alias="ins_head_name")
+    insContributionAmount:  Optional[Decimal] = None
+

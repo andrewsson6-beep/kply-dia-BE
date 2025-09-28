@@ -1,5 +1,5 @@
 from app.schema.contribution_schema import IndividualContributionCreateSchema, InstitutionContributionCreateSchema, InstitutionContributionUpdateSchema
-from app.schema.institutions_schema import InstitutionDetailRequestSchema, InstitutionUpdateSchema, InstitutionsInfoSchemaBase
+from app.schema.institutions_schema import InstitutionDetailRequestSchema, InstitutionUpdateSchema, InstitutionsCreateSchemaBase, InstitutionsInfoSchemaBase
 from app.service.institutions_service import InstitutionService, institutionservice
 from fastapi import APIRouter, Request
 from common.response.response_schema import  ResponseSchemaModel, response_base
@@ -20,7 +20,7 @@ async def institutions_list_api() -> ResponseSchemaModel:
 
 
 @router.post("/add-new-institution", dependencies=[DependsJwtAuth])
-async def add_new_institution(request:Request, obj: InstitutionsInfoSchemaBase) -> ResponseSchemaModel:
+async def add_new_institution(request:Request, obj: InstitutionsCreateSchemaBase) -> ResponseSchemaModel:
     try:
         new_institution = await institutionservice.add_new_institution(request,obj)
         return response_base.success(data=new_institution)
