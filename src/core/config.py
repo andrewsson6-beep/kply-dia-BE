@@ -72,7 +72,8 @@ class Settings(BaseSettings):
     CORS_ALLOWED_ORIGINS: list[str] = [ 
         "http://localhost:4200",
         "http://localhost:5173",
-        "https://kply-dia-fe-657638641053.us-central1.run.app"
+        "https://kply-dia-fe-657638641053.us-central1.run.app",
+        "https://kply-dia-fe-1097781738873.us-central1.run.app"
         
     ]
 
