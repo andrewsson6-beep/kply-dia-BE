@@ -6,8 +6,10 @@ from app.api.institution_api import router as institutionRoute
 from app.api.parish_api import router as parishRoute
 from app.api.community_api import router as communityRoute
 from app.api.family_api import router as familyRoute
+from app.api.health_api import router as healthRoute
 
 router = APIRouter()
+router.include_router(healthRoute)
 router.include_router(authRoute)
 router.include_router(foraneRoute)
 router.include_router(individualsRoute,prefix='/individual')
