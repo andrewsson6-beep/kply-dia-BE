@@ -23,7 +23,7 @@ MarkupSafe==3.0.2
 mdurl==0.1.2
 msgspec==0.19.0
 pip==22.3
-pwdlib==0.2.1
+pwdlib[bcrypt]==0.2.1
 pydantic==2.11.7
 pydantic_core==2.33.2
 pydantic-settings==2.10.1

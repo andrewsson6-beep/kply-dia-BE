@@ -44,6 +44,9 @@ class Settings(BaseSettings):
     DATABASE_USER: str
     DATABASE_PASSWORD: str
 
+    DATABASE_NAME: str
+    DATABASE_URL: str | None = None
+
     FASTAPI_API_V1_PATH: str = '/api/v1'
 
     DATABASE_SCHEMA: str
