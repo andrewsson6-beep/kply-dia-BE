@@ -16,7 +16,9 @@ class InstitutionDAO:
     async def institutions_list_query(self, db: AsyncSession) -> Institution:
        stmt = (select(self.model))
        result = await db.execute(stmt)
-       return result.scalars().all()
+       institutions = result.scalars().all()
+       await self._apply_institution_totals(db, institutions)
+       return institutions
     
     async def create_institution(self, db: AsyncSession, institution_data: InstitutionsCreateSchemaBase) -> Institution:
         # Get the highest unique number
@@ -64,7 +66,31 @@ class InstitutionDAO:
             .where(self.model.ins_id == institution_id, self.model.ins_is_deleted == False)
         )
         result = await db.execute(stmt)
-        return result.scalar_one_or_none()
+        institution = result.scalar_one_or_none()
+        if institution:
+            await self._apply_institution_totals(db, [institution])
+        return institution
+
+    async def _apply_institution_totals(self, db: AsyncSession, institutions: list[Institution]) -> None:
+        institution_ids = [institution.ins_id for institution in institutions]
+        if not institution_ids:
+            return
+
+        stmt = (
+            select(
+                InstitutionContribution.incon_ins_id,
+                func.coalesce(func.sum(InstitutionContribution.incon_amount), 0),
+            )
+            .where(
+                InstitutionContribution.incon_ins_id.in_(institution_ids),
+                InstitutionContribution.incon_is_deleted == False,
+            )
+            .group_by(InstitutionContribution.incon_ins_id)
+        )
+        result = await db.execute(stmt)
+        totals = dict(result.all())
+        for institution in institutions:
+            institution.ins_total_contribution_amount = totals.get(institution.ins_id, 0)
     
 
 
@@ -105,7 +131,10 @@ class InstitutionDAO:
         )
         result = await db.execute(stmt)
         await db.commit()
-        return result.scalar_one_or_none()
+        institution = result.scalar_one_or_none()
+        if institution:
+            await self._apply_institution_totals(db, [institution])
+        return institution
     
     async def update_contribution(self, db: AsyncSession, incon_id: int, update_data: dict) -> InstitutionContribution | None:
         # Fetch old contribution first

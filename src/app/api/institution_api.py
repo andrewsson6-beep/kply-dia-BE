@@ -4,6 +4,7 @@ from app.service.institutions_service import InstitutionService, institutionserv
 from fastapi import APIRouter, Request
 from common.response.response_schema import  ResponseSchemaModel, response_base
 from common.security.jwt import DependsJwtAuth
+from common.exception.errors import TokenError
 
 router = APIRouter()
 
@@ -15,6 +16,8 @@ async def institutions_list_api() -> ResponseSchemaModel:
         return response_base.success(data=data) 
     except ValueError as e:
         return response_base.fail(data=str(e))
+    except TokenError as e:
+        raise e
     except Exception as e:
         return response_base.fail(data=f"Something went wrong { str(e) }")
 
@@ -26,6 +29,8 @@ async def add_new_institution(request:Request, obj: InstitutionsCreateSchemaBase
         return response_base.success(data=new_institution)
     except ValueError as e:
         return response_base.fail(data=str(e))
+    except TokenError as e:
+        raise e
     except Exception as e:
         return response_base.fail(data=f"Something went wrong { str(e) }")
 
@@ -37,6 +42,8 @@ async def get_institution_details(request:Request, obj: InstitutionDetailRequest
         return response_base.success(data=new_institution)
     except ValueError as e:
         return response_base.fail(data=str(e))
+    except TokenError as e:
+        raise e
     except Exception as e:
         return response_base.fail(data=f"Something went wrong { str(e) }")
     
@@ -48,6 +55,8 @@ async def create_institution_contribution(data: InstitutionContributionCreateSch
       return response_base.success(data=new_individual_contribution)
    except ValueError as e:
         return response_base.fail(data=str(e))
+   except TokenError as e:
+        raise e
    except Exception as e:
         return response_base.fail(data=f"Something went wrong { str(e) }")
 
@@ -64,8 +73,10 @@ async def edit_institution(request:Request,data:InstitutionUpdateSchema):
       return response_base.success(data=updated_details)
    except ValueError as e:
         return response_base.fail(data=str(e))
+   except TokenError as e:
+        raise e
    except Exception as e:
-        return response_base.__response(data=f"Something went wrong { str(e) }")
+        return response_base.fail(data=f"Something went wrong { str(e) }")
 
 
 #TO Edit the Details Of the Specific Individual Contributions 
@@ -76,6 +87,8 @@ async def edit_institution_contribution(request:Request,data:InstitutionContribu
       return response_base.success(data=updated_details)
    except ValueError as e:
         return response_base.fail(data=str(e))
+   except TokenError as e:
+        raise e
    except Exception as e:
         return response_base.fail(data=f"Something went wrong {str(e)}")
 
@@ -88,5 +101,7 @@ async def delete_institution(request: Request, data: InstitutionDetailRequestSch
         return response_base.success(data="Insstitution deleted successfully")
     except ValueError as e:
         return response_base.fail(data=str(e))
+    except TokenError as e:
+        raise e
     except Exception as e:
-        return response_base.__response(data=f"Something went wrong: {str(e)}")
+        return response_base.fail(data=f"Something went wrong: {str(e)}")

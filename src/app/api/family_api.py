@@ -4,6 +4,7 @@ from app.service.family_service  import familyservice
 from fastapi import APIRouter,Request
 from common.response.response_schema import  ResponseSchemaModel, response_base
 from common.security.jwt import DependsJwtAuth
+from common.exception.errors import TokenError
 
 router = APIRouter()
 
@@ -15,8 +16,10 @@ async def create_family_api(request:Request,data: FamilyCreateSchema) -> Respons
       return response_base.success(data=new_family)
    except ValueError as e:
         return response_base.fail(data=str(e))
+   except TokenError as e:
+        raise e
    except Exception as e:
-        return response_base.__response(data=f"Something went wrong { str(e) }")
+        return response_base.fail(data=f"Something went wrong { str(e) }")
    
 @router.post("/update-family", dependencies=[DependsJwtAuth])
 async def update_family_api(request: Request, data: FamilyUpdateSchema):
@@ -25,8 +28,10 @@ async def update_family_api(request: Request, data: FamilyUpdateSchema):
       return response_base.success(data=updated_family)
     except ValueError as e:
         return response_base.fail(data=str(e))
+    except TokenError as e:
+        raise e
     except Exception as e:
-        return response_base.__response(data=f"Something went wrong { str(e) }")
+        return response_base.fail(data=f"Something went wrong { str(e) }")
   
 
 @router.post("/add-family-contribution", dependencies=[DependsJwtAuth])
@@ -36,8 +41,10 @@ async def create_family_contribution(request:Request,data: FamilContributionCrea
       return response_base.success(data=new_family_contribution)
    except ValueError as e:
         return response_base.fail(data=str(e))
+   except TokenError as e:
+        raise e
    except Exception as e:
-        return response_base.__response(data=f"Something went wrong { str(e) }")
+        return response_base.fail(data=f"Something went wrong { str(e) }")
    
 
 
@@ -48,8 +55,10 @@ async def family_details(data: FamilyRequestSchema):
       return response_base.success(data=new_family_details)
    except ValueError as e:
         return response_base.fail(data=str(e))
+   except TokenError as e:
+        raise e
    except Exception as e:
-        return response_base.__response(data=f"Something went wrong { str(e) }")
+        return response_base.fail(data=f"Something went wrong { str(e) }")
    
 
 
@@ -61,8 +70,10 @@ async def update_family_contribution(request: Request, data: FamilContributionUp
         return response_base.success(data=updated_contribution)
     except ValueError as e:
         return response_base.fail(data=str(e))
+    except TokenError as e:
+        raise e
     except Exception as e:
-        return response_base.__response(data=f"Something went wrong: {str(e)}")
+        return response_base.fail(data=f"Something went wrong: {str(e)}")
 
 
 @router.post("/delete-family-contribution", dependencies=[DependsJwtAuth])
@@ -73,8 +84,10 @@ async def delete_family_contribution(request: Request, data: FamilContributionDe
         return response_base.success(data="Contribution deleted successfully")
     except ValueError as e:
         return response_base.fail(data=str(e))
+    except TokenError as e:
+        raise e
     except Exception as e:
-        return response_base.__response(data=f"Something went wrong: {str(e)}")
+        return response_base.fail(data=f"Something went wrong: {str(e)}")
    
 
 @router.post("/delete-family", dependencies=[DependsJwtAuth])
@@ -84,6 +97,8 @@ async def delete_family(request: Request, obj: FamilyDeleteSchema) -> ResponseSc
         return response_base.success(data=msg)
     except ValueError as e:
         return response_base.fail(data=str(e))
+    except TokenError as e:
+        raise e
     except Exception as e:
         return response_base.fail(data=f"Something went wrong: {str(e)}")
 

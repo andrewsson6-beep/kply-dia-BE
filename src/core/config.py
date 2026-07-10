@@ -65,7 +65,7 @@ class Settings(BaseSettings):
         'X-Request-ID',
     ]
     CORS_ALLOWED_ORIGINS: list[str] = [ 
-        "http://localhost:4200",
+        "http://localhost:5173",
     ]
 
 

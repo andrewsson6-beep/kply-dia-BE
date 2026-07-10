@@ -1,5 +1,6 @@
 from typing import List
 from app.models.community_model import Community
+from app.models.familycontribution_model import FamilyContribution
 from app.models.family_model import Family
 from app.models.systemuser_model import SystemUser
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -54,6 +55,7 @@ class CommunityDAO:
 
         result = await db.execute(query)
         communities = result.scalars().all()
+        await self._apply_community_totals(db, communities)
         return communities
     
     async def get_community_detail(self, db: AsyncSession, community_id: int) :
@@ -63,7 +65,54 @@ class CommunityDAO:
         )
         result = await db.execute(stmt)
         community = result.scalar_one_or_none()
+        if community:
+            await self._apply_family_totals(db, community.families)
+            await self._apply_community_totals(db, [community])
         return community
+
+    async def _apply_community_totals(self, db: AsyncSession, communities: list[Community]) -> None:
+        community_ids = [community.com_id for community in communities]
+        if not community_ids:
+            return
+
+        stmt = (
+            select(
+                Family.fam_com_id,
+                func.coalesce(func.sum(FamilyContribution.fcon_amount), 0),
+            )
+            .join(FamilyContribution, FamilyContribution.fcon_fam_id == Family.fam_id)
+            .where(
+                Family.fam_com_id.in_(community_ids),
+                Family.fam_is_deleted == False,
+                FamilyContribution.fcon_is_deleted == False,
+            )
+            .group_by(Family.fam_com_id)
+        )
+        result = await db.execute(stmt)
+        totals = dict(result.all())
+        for community in communities:
+            community.com_total_contribution_amount = totals.get(community.com_id, 0)
+
+    async def _apply_family_totals(self, db: AsyncSession, families: list[Family]) -> None:
+        family_ids = [family.fam_id for family in families]
+        if not family_ids:
+            return
+
+        stmt = (
+            select(
+                FamilyContribution.fcon_fam_id,
+                func.coalesce(func.sum(FamilyContribution.fcon_amount), 0),
+            )
+            .where(
+                FamilyContribution.fcon_fam_id.in_(family_ids),
+                FamilyContribution.fcon_is_deleted == False,
+            )
+            .group_by(FamilyContribution.fcon_fam_id)
+        )
+        result = await db.execute(stmt)
+        totals = dict(result.all())
+        for family in families:
+            family.fam_total_contribution_amount = totals.get(family.fam_id, 0)
     
 
     async def update_community(self, db: AsyncSession, community_id: int, update_data: dict) -> Community | None:
@@ -75,7 +124,10 @@ class CommunityDAO:
         )
         result = await db.execute(stmt)
         await db.commit()
-        return result.scalar_one_or_none()
+        community = result.scalar_one_or_none()
+        if community:
+            await self._apply_community_totals(db, [community])
+        return community
     
     async def delete_community(self, db: AsyncSession, com_id: int, user_id: int) -> Community | None:
         stmt = (

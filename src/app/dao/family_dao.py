@@ -57,7 +57,10 @@ class FamilyDAO:
         )
         result = await db.execute(stmt)
         await db.commit()
-        return result.scalar_one_or_none()
+        family = result.scalar_one_or_none()
+        if family:
+            family.fam_total_contribution_amount = await self._family_total(db, family.fam_id)
+        return family
     
 
     
@@ -170,7 +173,18 @@ class FamilyDAO:
         )
         result = await db.execute(stmt)
         await db.flush()
-        return result.scalar_one_or_none()
+        family = result.scalar_one_or_none()
+        if family:
+            family.fam_total_contribution_amount = await self._family_total(db, family.fam_id)
+        return family
+
+    async def _family_total(self, db: AsyncSession, family_id: int):
+        stmt = select(func.coalesce(func.sum(FamilyContribution.fcon_amount), 0)).where(
+            FamilyContribution.fcon_fam_id == family_id,
+            FamilyContribution.fcon_is_deleted == False,
+        )
+        result = await db.execute(stmt)
+        return result.scalar_one()
     
 
     async def update_family_contribution(self, db: AsyncSession, user_id: int,data: FamilContributionUpdateSchema) -> FamilyContribution | None:

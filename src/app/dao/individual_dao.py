@@ -16,7 +16,9 @@ class IndividualDAO:
     async def individuals_list_query(self, db: AsyncSession) -> Individual:
        stmt = (select(self.model))
        result = await db.execute(stmt)
-       return result.scalars().all()
+       individuals = result.scalars().all()
+       await self._apply_individual_totals(db, individuals)
+       return individuals
     
     async def create_individual(self, db: AsyncSession, individual_data: IndividualsInfoSchemaBase) -> Individual:
         # Get max unique number
@@ -103,7 +105,31 @@ class IndividualDAO:
         )
         result = await db.execute(stmt)
         await db.flush()
-        return result.scalar_one_or_none()
+        individual = result.scalar_one_or_none()
+        if individual:
+            await self._apply_individual_totals(db, [individual])
+        return individual
+
+    async def _apply_individual_totals(self, db: AsyncSession, individuals: list[Individual]) -> None:
+        individual_ids = [individual.ind_id for individual in individuals]
+        if not individual_ids:
+            return
+
+        stmt = (
+            select(
+                IndividualContribution.icon_ind_id,
+                func.coalesce(func.sum(IndividualContribution.icon_amount), 0),
+            )
+            .where(
+                IndividualContribution.icon_ind_id.in_(individual_ids),
+                IndividualContribution.icon_is_deleted == False,
+            )
+            .group_by(IndividualContribution.icon_ind_id)
+        )
+        result = await db.execute(stmt)
+        totals = dict(result.all())
+        for individual in individuals:
+            individual.ind_total_contribution_amount = totals.get(individual.ind_id, 0)
     
     async def update_individual(self, db: AsyncSession, individual_id: int, update_data: dict) -> Individual | None:
         stmt = (
@@ -114,7 +140,10 @@ class IndividualDAO:
         )
         result = await db.execute(stmt)
         await db.commit()
-        return result.scalar_one_or_none()
+        individual = result.scalar_one_or_none()
+        if individual:
+            await self._apply_individual_totals(db, [individual])
+        return individual
     
     async def update_contribution(self, db: AsyncSession, contribution_id: int, update_data: dict) -> IndividualContribution | None:
         # Step 1: Get existing contribution

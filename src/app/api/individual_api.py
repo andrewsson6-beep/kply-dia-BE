@@ -4,6 +4,7 @@ from app.service.individuals_service import individualservice
 from fastapi import APIRouter,Request
 from common.response.response_schema import  ResponseSchemaModel, response_base
 from common.security.jwt import DependsJwtAuth
+from common.exception.errors import TokenError
 
 router = APIRouter()
 
@@ -14,8 +15,10 @@ async def individuals_list_api() -> ResponseSchemaModel:
       return response_base.success(data=data) 
    except ValueError as e:
         return response_base.fail(data=str(e))
+   except TokenError as e:
+        raise e
    except Exception as e:
-        return response_base.__response(data=f"Something went wrong { str(e) }")
+        return response_base.fail(data=f"Something went wrong { str(e) }")
 
 @router.post("/add-new-individual", dependencies=[DependsJwtAuth])
 async def add_new_individual(request: IndividualsInfoSchemaBase) -> ResponseSchemaModel:
@@ -24,8 +27,10 @@ async def add_new_individual(request: IndividualsInfoSchemaBase) -> ResponseSche
       return response_base.success(data=new_individual)
    except ValueError as e:
         return response_base.fail(data=str(e))
+   except TokenError as e:
+        raise e
    except Exception as e:
-        return response_base.__response(data=f"Something went wrong { str(e) }")
+        return response_base.fail(data=f"Something went wrong { str(e) }")
 
 @router.post("/add-individual-contribution", dependencies=[DependsJwtAuth])
 async def create_contribution(data: IndividualContributionCreateSchema):
@@ -34,8 +39,10 @@ async def create_contribution(data: IndividualContributionCreateSchema):
       return response_base.success(data=new_individual_contribution)
    except ValueError as e:
         return response_base.fail(data=str(e))
+   except TokenError as e:
+        raise e
    except Exception as e:
-        return response_base.__response(data=f"Something went wrong { str(e) }")
+        return response_base.fail(data=f"Something went wrong { str(e) }")
 
 @router.post("/individual-details", dependencies=[DependsJwtAuth])
 async def create_contribution(individual_id:IndividualDetailRequestSchema):
@@ -44,8 +51,10 @@ async def create_contribution(individual_id:IndividualDetailRequestSchema):
       return response_base.success(data=new_individual_contribution)
    except ValueError as e:
         return response_base.fail(data=str(e))
+   except TokenError as e:
+        raise e
    except Exception as e:
-        return response_base.__response(data=f"Something went wrong { str(e) }")
+        return response_base.fail(data=f"Something went wrong { str(e) }")
 
 
 #TO Edit the Individual Details API 
@@ -56,8 +65,10 @@ async def edit_individual(request:Request,data:IndividualUpdateSchema):
       return response_base.success(data=updated_details)
    except ValueError as e:
         return response_base.fail(data=str(e))
+   except TokenError as e:
+        raise e
    except Exception as e:
-        return response_base.__response(data=f"Something went wrong { str(e) }")
+        return response_base.fail(data=f"Something went wrong { str(e) }")
 
 
 #TO Edit the Details Of the Specific Individual Contributions 
@@ -68,6 +79,8 @@ async def edit_contribution(request:Request,data:IndividualContributionUpdateSch
       return response_base.success(data=updated_details)
    except ValueError as e:
         return response_base.fail(data=str(e))
+   except TokenError as e:
+        raise e
    except Exception as e:
         return response_base.fail(data=f"Something went wrong {str(e)}")
 
@@ -80,8 +93,10 @@ async def delete_individul(request: Request, data: IndividualDetailRequestSchema
         return response_base.success(data="Individual deleted successfully")
     except ValueError as e:
         return response_base.fail(data=str(e))
+    except TokenError as e:
+        raise e
     except Exception as e:
-        return response_base.__response(data=f"Something went wrong: {str(e)}")
+        return response_base.fail(data=f"Something went wrong: {str(e)}")
 
 
 

@@ -2,6 +2,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func, insert, select, update
 from sqlalchemy.orm import selectinload,noload
+from app.models.community_model import Community
+from app.models.family_model import Family
+from app.models.familycontribution_model import FamilyContribution
 from app.models.parish_model import Parish
 from app.models.systemuser_model import SystemUser
 from app.schema.parish_schema import ParishCreateSchema
@@ -52,7 +55,9 @@ class ParishDAO:
             .where(self.model.par_is_deleted == False)  # exclude deleted
         )
         result = await db.execute(stmt)
-        return result.scalars().all()
+        parishes = result.scalars().all()
+        await self._apply_parish_totals(db, parishes)
+        return parishes
 
     
     async def get_parishes_by_forane(self, db: AsyncSession, forane_id: int) -> list[Parish]:
@@ -61,7 +66,9 @@ class ParishDAO:
             self.model.par_is_deleted == False
         )
         result = await db.execute(stmt)
-        return result.scalars().all()
+        parishes = result.scalars().all()
+        await self._apply_parish_totals(db, parishes)
+        return parishes
     
 
 
@@ -72,7 +79,59 @@ class ParishDAO:
             .where(self.model.par_id == par_id, self.model.par_is_deleted == False)
         )
         result = await db.execute(stmt)
-        return result.scalar_one_or_none()
+        parish = result.scalar_one_or_none()
+        if parish:
+            await self._apply_parish_totals(db, [parish])
+            await self._apply_community_totals(db, parish.communities)
+        return parish
+
+    async def _apply_parish_totals(self, db: AsyncSession, parishes: list[Parish]) -> None:
+        parish_ids = [parish.par_id for parish in parishes]
+        if not parish_ids:
+            return
+
+        stmt = (
+            select(
+                Community.com_par_id,
+                func.coalesce(func.sum(FamilyContribution.fcon_amount), 0),
+            )
+            .join(Family, Family.fam_com_id == Community.com_id)
+            .join(FamilyContribution, FamilyContribution.fcon_fam_id == Family.fam_id)
+            .where(
+                Community.com_par_id.in_(parish_ids),
+                Community.com_is_deleted == False,
+                Family.fam_is_deleted == False,
+                FamilyContribution.fcon_is_deleted == False,
+            )
+            .group_by(Community.com_par_id)
+        )
+        result = await db.execute(stmt)
+        totals = dict(result.all())
+        for parish in parishes:
+            parish.par_total_contribution_amount = totals.get(parish.par_id, 0)
+
+    async def _apply_community_totals(self, db: AsyncSession, communities: list[Community]) -> None:
+        community_ids = [community.com_id for community in communities]
+        if not community_ids:
+            return
+
+        stmt = (
+            select(
+                Family.fam_com_id,
+                func.coalesce(func.sum(FamilyContribution.fcon_amount), 0),
+            )
+            .join(FamilyContribution, FamilyContribution.fcon_fam_id == Family.fam_id)
+            .where(
+                Family.fam_com_id.in_(community_ids),
+                Family.fam_is_deleted == False,
+                FamilyContribution.fcon_is_deleted == False,
+            )
+            .group_by(Family.fam_com_id)
+        )
+        result = await db.execute(stmt)
+        totals = dict(result.all())
+        for community in communities:
+            community.com_total_contribution_amount = totals.get(community.com_id, 0)
 
     async def update_parish_details(self, db: AsyncSession, par_id: int, update_data: dict, user_id: int) -> Parish | None:
         stmt = (
@@ -82,7 +141,10 @@ class ParishDAO:
             .returning(self.model).options(noload(self.model.communities)) 
         )
         result = await db.execute(stmt)
-        return result.scalar_one_or_none()
+        parish = result.scalar_one_or_none()
+        if parish:
+            await self._apply_parish_totals(db, [parish])
+        return parish
 
     async def delete_parish(self, db: AsyncSession, par_id: int, user_id: int) -> Parish | None:
         stmt = (
